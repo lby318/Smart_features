@@ -1,0 +1,33 @@
+commit 8edf38b2279bca168a667bcc536afdeae4729e67
+Author: liangjianqiu <liangjianqiu@hkzechin.com>
+Date:   Mon Oct 10 10:06:55 2016 +0800
+
+    [Bmobile][Telephony]默认勾选DATA ROAMING
+
+diff --git a/alps/frameworks/opt/telephony/src/java/android/provider/Telephony.java b/alps/frameworks/opt/telephony/src/java/android/provider/Telephony.java
+old mode 100644
+new mode 100755
+index 3b68acc..938e2b4
+--- a/alps/frameworks/opt/telephony/src/java/android/provider/Telephony.java
++++ b/alps/frameworks/opt/telephony/src/java/android/provider/Telephony.java
+@@ -3565,7 +3565,7 @@ public final class Telephony {
+ 
+         public static final int DATA_ROAMING_DISABLE = 0;
+         /** @internal */
+-        public static final int DATA_ROAMING_DEFAULT = DATA_ROAMING_DISABLE;
++        public static final int DATA_ROAMING_DEFAULT = DATA_ROAMING_ENABLE; //jianqiu modify 20161010
+         
+         /**
+          * <P>Type: INTEGER</P>
+diff --git a/alps/mediatek/config/zechin72_w_kk/system.prop b/alps/mediatek/config/zechin72_w_kk/system.prop
+index f3c4707..fea51b1 100755
+--- a/alps/mediatek/config/zechin72_w_kk/system.prop
++++ b/alps/mediatek/config/zechin72_w_kk/system.prop
+@@ -62,3 +62,7 @@ ro.operator.optr=CUST
+ 
+ #@darren add for timezone
+ persist.sys.timezone = America/Mexico_City
++
++#jianqiu add 20161010
++ro.com.android.dataroaming=true
++ro.com.android.dataroaming2=true
