@@ -1,0 +1,28 @@
+commit 077c0036ed22f1da08eccbc9fbc64e7f87eb0b4b
+Author: liubinyang <liubinyang@hkzechin.com>
+Date:   Mon Aug 29 19:02:37 2016 +0800
+
+    [Bmobile][GMS][common17][Settings]开发者选项默认关闭
+
+diff --git a/alps/packages/apps/Settings/src/com/android/settings/DevelopmentSettings.java b/alps/packages/apps/Settings/src/com/android/settings/DevelopmentSettings.java
+index 125ef73..7217b94 100644
+--- a/alps/packages/apps/Settings/src/com/android/settings/DevelopmentSettings.java
++++ b/alps/packages/apps/Settings/src/com/android/settings/DevelopmentSettings.java
+@@ -515,7 +515,7 @@ public class DevelopmentSettings extends SettingsPreferenceFragment
+         mSwitchBar.setChecked(isChecked);
+         setPrefsEnabledState(mLastEnabledState);
+ 
+-        if (mHaveDebugSettings && !mLastEnabledState) {
++        /*if (mHaveDebugSettings && !mLastEnabledState) {
+             // Overall debugging is disabled, but there are some debug
+             // settings that are enabled.  This is an invalid state.  Switch
+             // to debug settings being enabled, so the user knows there is
+@@ -525,7 +525,7 @@ public class DevelopmentSettings extends SettingsPreferenceFragment
+             mLastEnabledState = true;
+             mSwitchBar.setChecked(mLastEnabledState);
+             setPrefsEnabledState(mLastEnabledState);
+-        }
++        }*///@darren modify for disable developer option
+         mSwitchBar.show();
+         /// M: usb preference change
+         mExt.customUSBPreference(mEnableAdb);
