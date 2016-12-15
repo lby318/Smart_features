@@ -1,0 +1,19 @@
+commit d3f3639a1a561c9cc376df6339f0dd31895b1988
+Author: liubinyang <liubinyang@hkzechin.com>
+Date:   Sun Sep 18 16:57:05 2016 +0800
+
+    [Bmobile][Email]预置邮箱签名为Enviado desde mi Bmobile AX675C
+
+diff --git a/alps/packages/apps/Email/emailcommon/src/com/android/emailcommon/provider/Account.java b/alps/packages/apps/Email/emailcommon/src/com/android/emailcommon/provider/Account.java
+index ff567d0..fb2e536 100755
+--- a/alps/packages/apps/Email/emailcommon/src/com/android/emailcommon/provider/Account.java
++++ b/alps/packages/apps/Email/emailcommon/src/com/android/emailcommon/provider/Account.java
+@@ -221,7 +221,7 @@ public final class Account extends EmailContent implements AccountColumns, Parce
+         mSyncLookback = -1;
+         mFlags = 0;
+         mCompatibilityUuid = UUID.randomUUID().toString();
+-	mSignature = "Enviado desde mi AX685e"; //@darren add for preload email signature.
++	mSignature = "Enviado desde mi Bmobile AX675C"; //@darren add for preload email signature.
+     }
+ 
+     public static Account restoreAccountWithId(Context context, long id) {
