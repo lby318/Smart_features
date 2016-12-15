@@ -1,0 +1,101 @@
+commit f3c145415d993f9fc57167515aaef55263b85265
+Author: liangjianqiu <liangjianqiu@hkzechin.com>
+Date:   Mon Sep 5 16:15:53 2016 +0800
+
+    [Bmobile][Browser]根据MCC/MNC显示不同主页
+
+diff --git a/alps/packages/apps/Browser/res/values/strings.xml b/alps/packages/apps/Browser/res/values/strings.xml
+index afef421..3794686 100755
+--- a/alps/packages/apps/Browser/res/values/strings.xml
++++ b/alps/packages/apps/Browser/res/values/strings.xml
+@@ -799,7 +799,7 @@
+     <!--<string name="homepage_base" translatable="false">
+         http://www.google.com/webhp?client={CID}&amp;source=android-home</string>-->
+     <string name="homepage_base" translatable="false">http://www.google.com</string>
+-
++    <string name="homepage_base_co" translatable="false">http://www.tigo.com.co</string>
+     <!-- Bookmarks -->
+     <string-array name="bookmarks" translatable="false">
+         <!--item>Google</item>
+diff --git a/alps/packages/apps/Browser/src/com/android/browser/BrowserSettings.java b/alps/packages/apps/Browser/src/com/android/browser/BrowserSettings.java
+index 4c9ab42..607cf7a 100755
+--- a/alps/packages/apps/Browser/src/com/android/browser/BrowserSettings.java
++++ b/alps/packages/apps/Browser/src/com/android/browser/BrowserSettings.java
+@@ -70,6 +70,7 @@ import java.util.LinkedList;
+ import java.util.List;
+ import java.util.WeakHashMap;
+ 
++import android.telephony.TelephonyManager;
+ /**
+  * Class for managing settings
+  */
+@@ -277,7 +278,8 @@ public class BrowserSettings implements OnSharedPreferenceChangeListener,
+                 /*if (BrowserFeatureOption.BROWSER_SITE_NAVIGATION_SUPPORT) {
+                     sFactoryResetUrl = mContext.getResources().getString(R.string.homepage_base_site_navigation);
+                 } else {*///lijun modify to set homepage as default
+-                    sFactoryResetUrl = mContext.getResources().getString(R.string.homepage_base);
++                    //sFactoryResetUrl = mContext.getResources().getString(R.string.homepage_base);
++                    sFactoryResetUrl = setOtherhomepage(mContext);
+                     if (sFactoryResetUrl.indexOf("{CID}") != -1) {
+                         sFactoryResetUrl = sFactoryResetUrl.replace("{CID}",
+                                 BrowserProvider.getClientId(mContext.getContentResolver()));
+@@ -294,13 +296,58 @@ public class BrowserSettings implements OnSharedPreferenceChangeListener,
+         }
+     };
+ 
++
++    public static String setOtherhomepagestatic(Context context){
++
++        	TelephonyManager mGeminiPhone = (TelephonyManager)context.getSystemService("phone");
++
++              if(mGeminiPhone != null){
++				 String mGeminiSim1 = mGeminiPhone.getSimOperatorGemini(0);
++				 String mGeminiSim2 = mGeminiPhone.getSimOperatorGemini(1);
++
++				 //Log.d(TAG, "mGeminiSim1 == " + mGeminiSim1);
++				 
++			 if(mGeminiSim1 != null &&(mGeminiSim1.equals("732103") || mGeminiSim1.equals("732111") ||mGeminiSim1.equals("46001"))){
++			 	return context.getResources().getString(R.string.homepage_base_co);		 	
++			 }
++			 if(mGeminiSim2 != null &&(mGeminiSim2.equals("732103") || mGeminiSim2.equals("732111") ||mGeminiSim2.equals("46001"))){
++			 	return context.getResources().getString(R.string.homepage_base_co);		 	
++			 }			 
++		 
++             }	
++		return context.getResources().getString(R.string.homepage_base);
++    	}
++
++    public  String setOtherhomepage(Context context){
++
++        	TelephonyManager mGeminiPhone = (TelephonyManager)context.getSystemService("phone");
++
++              if(mGeminiPhone != null){
++				 String mGeminiSim1 = mGeminiPhone.getSimOperatorGemini(0);
++				 String mGeminiSim2 = mGeminiPhone.getSimOperatorGemini(1);
++
++				 //Log.d(TAG, "mGeminiSim1 == " + mGeminiSim1);
++				 
++			 if(mGeminiSim1 != null &&(mGeminiSim1.equals("732103") || mGeminiSim1.equals("732111") ||mGeminiSim1.equals("46001"))){
++			 	return context.getResources().getString(R.string.homepage_base_co);		 	
++			 }
++			 if(mGeminiSim2 != null &&(mGeminiSim2.equals("732103") || mGeminiSim2.equals("732111") ||mGeminiSim2.equals("46001"))){
++			 	return context.getResources().getString(R.string.homepage_base_co);		 	
++			 }			 
++		 
++             }	
++		return context.getResources().getString(R.string.homepage_base);
++    	}
++
++
+     public static String getFactoryResetUrlFromRes(Context context) {
+         /// M: Operator Feature get the customer homepage. @{
+         sBrowserSmallFeatureEx = Extensions.getSmallFeaturePlugin(context);
+         sFactoryResetUrl = sBrowserSmallFeatureEx.getCustomerHomepage();
+         
+         if (sFactoryResetUrl == null) {
+-            sFactoryResetUrl = context.getResources().getString(R.string.homepage_base);
++            //sFactoryResetUrl = context.getResources().getString(R.string.homepage_base);
++            sFactoryResetUrl = setOtherhomepagestatic(context);
+         }
+ 
+         if (sFactoryResetUrl.indexOf("{CID}") != -1) {
