@@ -1,0 +1,18 @@
+commit b366994b5a860ca4f380291398889df9d6697035
+Author: gejianbo <gejianbo@hkzechin.com>
+Date:   Tue Dec 13 16:31:49 2016 +0800
+
+    [平台232][Email][补充平台231]解决因xts 测试fail 项修改email targetSdkVersion为23时权限问题导致的报停
+
+diff --git a/alps/packages/apps/Email/src/com/android/email2/ui/MailActivityEmail.java b/alps/packages/apps/Email/src/com/android/email2/ui/MailActivityEmail.java
+index c93b32b..c9091b4 100755
+--- a/alps/packages/apps/Email/src/com/android/email2/ui/MailActivityEmail.java
++++ b/alps/packages/apps/Email/src/com/android/email2/ui/MailActivityEmail.java
+@@ -282,6 +282,7 @@ public class MailActivityEmail extends com.android.mail.ui.MailActivity {
+         }
+         super.onResume();
+         PDebug.End("MailActivityEmail.onResume");
++		CheckPermission(); //jiano.ge add 20161110 for jria BLUFZTT-31
+     }
+ 
+     @Override

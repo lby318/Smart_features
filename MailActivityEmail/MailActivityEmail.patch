@@ -1,0 +1,100 @@
+commit 149c1b42d1f1a460978f87da7abb77b8090f66c3
+Author: gejianbo <gejianbo@hkzechin.com>
+Date:   Tue Dec 13 15:00:42 2016 +0800
+
+    [平台231][Email]解决email没有读取媒体权限是设置外歌曲为通知提示音时email报停问题- 测试XTS有fail项时修改email targetSdkVersion为23的项目cp此修改
+
+diff --git a/alps/packages/apps/Email/src/com/android/email2/ui/MailActivityEmail.java b/alps/packages/apps/Email/src/com/android/email2/ui/MailActivityEmail.java
+old mode 100644
+new mode 100755
+index d65a543..c93b32b
+--- a/alps/packages/apps/Email/src/com/android/email2/ui/MailActivityEmail.java
++++ b/alps/packages/apps/Email/src/com/android/email2/ui/MailActivityEmail.java
+@@ -51,12 +51,24 @@ import com.android.mail.utils.LogTag;
+ import com.android.mail.utils.LogUtils;
+ import com.android.mail.utils.PDebug;
+ import com.android.mail.utils.Utils;
+-
++//jianbo.ge add 20161110 for jria COPPLE-31@{
++import android.Manifest;
++import android.content.pm.PackageManager;
++import android.widget.Toast;
++import java.util.List;
++import java.util.ArrayList;
++//add end}
+ public class MailActivityEmail extends com.android.mail.ui.MailActivity {
+ 
+     public static final String LOG_TAG = LogTag.getLogTag();
+ 
+     private static final int MATCH_LEGACY_SHORTCUT_INTENT = 1;
++	       	   //jianbo.ge add for  20161110@{
++    private static final int MY_PERMISSIONS_REQUEST_READ_ATTACHMENT = 101;
++    private boolean mAllGranted = false;
++    private boolean mPermRequesting = false;
++    private static final String [] sPermissionsNeeded = {Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_PHONE_STATE};
++       //jianbo.ge  add end 
+     /**
+      * A matcher for data URI's that specify conversation list info.
+      */
+@@ -203,7 +215,60 @@ public class MailActivityEmail extends com.android.mail.ui.MailActivity {
+ 
+         return intent;
+     }
+-
++        	//jianbo.ge add  20161110 for jria BLUFZTT-31
++	@Override
++    public void onRequestPermissionsResult(int requestCode,
++            String[] permissions, int[] grantResults) {
++        mPermRequesting = false;
++        switch (requestCode) {
++        case MY_PERMISSIONS_REQUEST_READ_ATTACHMENT:
++            if (grantResults != null && grantResults.length > 0) {
++                boolean isGranted = true;
++                for (int i = 0; i < grantResults.length; i++) {
++                    if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
++                        isGranted = false;
++                        break;
++                    }
++                }
++                if (!isGranted) {
++                    String toastStr = getString(com.mediatek.internal.R.string.denied_required_permission); 
++                    Toast.makeText(getApplicationContext(), toastStr, Toast.LENGTH_LONG).show();
++                    finish();
++                } else {
++					
++                    mAllGranted = true;
++                }
++            }
++            break;
++        default:
++            super.onRequestPermissionsResult(requestCode, permissions,
++                    grantResults);
++            break;
++        }
++    }
++	
++    
++	private void CheckPermission(){
++        if (!mAllGranted & !mPermRequesting) {
++            List<String> permissionsRequestList = new ArrayList<String>();
++            for (int i = 0; i < sPermissionsNeeded.length; i++) {
++                if (checkSelfPermission(sPermissionsNeeded[i]) !=
++                        PackageManager.PERMISSION_GRANTED) {
++                    permissionsRequestList.add(sPermissionsNeeded[i]);
++                }
++            }
++            if (permissionsRequestList.size() > 0) {
++                requestPermissions(
++                        permissionsRequestList.toArray(new String[permissionsRequestList.size()]),
++                        MY_PERMISSIONS_REQUEST_READ_ATTACHMENT);
++                mPermRequesting = true;
++            } else {
++				
++                mAllGranted = true;
++            }
++        }
++    }
++	// add end 
+     @Override
+     public void onResume() {
+         PDebug.Start("MailActivityEmail.onResume");
