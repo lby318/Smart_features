@@ -1,0 +1,22 @@
+commit b304e5e523f49d46bb5d1caabb073e2bd18a0fb8
+Author: yuzhengshui <yuzhengshui@hkzechin.com>
+Date:   Sat May 28 09:25:45 2016 +0800
+
+    [平台][Charge]关机充电不显示低电界面，改为显示LOGO，避免误解
+
+diff --git a/alps/vendor/mediatek/proprietary/bootable/bootloader/lk/platform/mt6735/platform.c b/alps/vendor/mediatek/proprietary/bootable/bootloader/lk/platform/mt6735/platform.c
+old mode 100644
+new mode 100755
+index f61d981..c0b853e
+--- a/alps/vendor/mediatek/proprietary/bootable/bootloader/lk/platform/mt6735/platform.c
++++ b/alps/vendor/mediatek/proprietary/bootable/bootloader/lk/platform/mt6735/platform.c
+@@ -771,7 +771,8 @@ void platform_init(void)
+ 		        ((CHR_Type_num != STANDARD_HOST) && (CHR_Type_num != NONSTANDARD_CHARGER))) {
+ #endif
+ 			mt_disp_power(TRUE);
+-			mt_disp_show_low_battery();
++			//mt_disp_show_low_battery();
++			mt_disp_show_boot_logo();///modified by maxyu 150514
+ 			mt65xx_leds_brightness_set(6, 110);
+ #ifdef MTK_BATLOWV_NO_PANEL_ON_EARLY
+ 		}
