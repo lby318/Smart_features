@@ -1,0 +1,94 @@
+commit ab3dc46b33576e20547b8f743542824a87cfbeb2
+Author: liangjianqiu <liangjianqiu@hkzechin.com>
+Date:   Mon Oct 10 14:26:28 2016 +0800
+
+    [Bmobile][Wifi]默认预置 MOVISTAR WIFI,显示在wiif列表中，不可删改
+
+diff --git a/alps/external/wpa_supplicant_8/wpa_supplicant/wpa_supplicant.c b/alps/external/wpa_supplicant_8/wpa_supplicant/wpa_supplicant.c
+old mode 100644
+new mode 100755
+index 7158c5d..eb79b8d
+--- a/alps/external/wpa_supplicant_8/wpa_supplicant/wpa_supplicant.c
++++ b/alps/external/wpa_supplicant_8/wpa_supplicant/wpa_supplicant.c
+@@ -3515,6 +3515,42 @@ static int wpa_supplicant_init_iface(struct wpa_supplicant *wpa_s,
+ 		return -1;
+ 	}
+ 	os_strlcpy(wpa_s->ifname, iface->ifname, sizeof(wpa_s->ifname));
++	
++	//@darren add for skip scan MOVISTAR WIFI when wifi cannot connect to it from FAQ[FAQ15503]
++	#ifdef CONFIG_MTK_P2P
++		if((os_strlen(wpa_s->ifname) == os_strlen("p2p0"))
++			&& (os_strncasecmp(wpa_s->ifname,"p2p0",os_strlen("p2p0")) ==0 )){
++			struct wpa_ssid *cmcc_conf = wpa_s->conf->ssid;
++			struct wpa_ssid *tmp = NULL;
++			int removed = 0;
++			while(cmcc_conf){
++				removed = 0;
++				int ssid_len = os_strlen(cmcc_conf->ssid);
++			if(ssid_len == os_strlen("MOVISTAR WIFI")){
++				if(os_strncasecmp(cmcc_conf->ssid,"MOVISTAR WIFI",ssid_len) == 0){
++					tmp = cmcc_conf->next;
++					removed = 1;
++					wpa_config_remove_network(wpa_s->conf,cmcc_conf->id);
++					if(wpa_s->conf->update_config){
++						if(wpa_config_write(wpa_s->confname,wpa_s->conf)){
++							wpa_printf(MSG_DEBUG,"CTRL_IFACE:SAVE_CONFIG - Failed to "
++								"update configuration");
++						}else{
++							wpa_printf(MSG_DEBUG,"CTRL_IFACE:SAVE_CONFIG - Configuration"
++								" updated");
++						}
++					}
++				}
++			}
++			if (removed)
++				cmcc_conf = tmp;
++			else 
++				cmcc_conf = cmcc_conf->next;/* have not touched */
++			}
++		}		
++	#endif
++	//@darren add end
++	
+ /* Check if the CMCC related network desc is in the wpa_s->conf->ssid,
+ * 1. CMCC-AUTO
+ * 2. CMCC
+diff --git a/alps/mediatek/external/mtk_wifi/config/mtk-wpa_supplicant-overlay.conf b/alps/mediatek/external/mtk_wifi/config/mtk-wpa_supplicant-overlay.conf
+index 94cce7b..76bf417 100755
+--- a/alps/mediatek/external/mtk_wifi/config/mtk-wpa_supplicant-overlay.conf
++++ b/alps/mediatek/external/mtk_wifi/config/mtk-wpa_supplicant-overlay.conf
+@@ -1,2 +1,9 @@
+ p2p_no_group_iface=1
+ driver_param=use_p2p_group_interface=1
++overlay_loaded=1
++
++network={
++         ssid="MOVISTAR WIFI"
++         scan_ssid=1
++         key_mgmt=NONE
++}
+diff --git a/alps/packages/apps/Settings/src/com/android/settings/wifi/WifiSettings.java b/alps/packages/apps/Settings/src/com/android/settings/wifi/WifiSettings.java
+old mode 100644
+new mode 100755
+index c179f23..1597c1f
+--- a/alps/packages/apps/Settings/src/com/android/settings/wifi/WifiSettings.java
++++ b/alps/packages/apps/Settings/src/com/android/settings/wifi/WifiSettings.java
+@@ -715,7 +715,7 @@ public class WifiSettings extends RestrictedSettingsFragment
+                 }
+                 /// @}
+ 
+-                if (mSelectedAccessPoint.networkId != INVALID_NETWORK_ID) {
++                if (mSelectedAccessPoint.networkId != INVALID_NETWORK_ID && !(mSelectedAccessPoint.ssid).equals("MOVISTAR WIFI")) {
+                     /// M: should add forget menu
+                     if (mExt.shouldAddForgetMenu(mSelectedAccessPoint.ssid,mSelectedAccessPoint.security)) {
+                         menu.add(Menu.NONE, MENU_ID_FORGET, 0, R.string.wifi_menu_forget);
+@@ -781,6 +781,9 @@ public class WifiSettings extends RestrictedSettingsFragment
+     public boolean onPreferenceTreeClick(PreferenceScreen screen, Preference preference) {
+         if (preference instanceof AccessPoint) {
+             mSelectedAccessPoint = (AccessPoint) preference;
++	     if((mSelectedAccessPoint.ssid).equals("MOVISTAR WIFI")){
++		 	return true;
++	     	}
+             /** Bypass dialog for unsecured, unsaved networks */
+             if (mSelectedAccessPoint.security == AccessPoint.SECURITY_NONE &&
+                     mSelectedAccessPoint.networkId == INVALID_NETWORK_ID) {
