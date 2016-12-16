@@ -1,0 +1,125 @@
+commit e36bfefb8664bc7d57edf91866ddcd9a69c85f54
+Author: xielianxiong <xielianxiong@hkzechin.com>
+Date:   Tue May 24 17:31:02 2016 +0800
+
+    [平台008][WITH_DEXPREOPT]编译user版本提取odex加快开机速度
+
+diff --git a/alps/device/mediatek/mt6735/BoardConfig.mk b/alps/device/mediatek/mt6735/BoardConfig.mk
+index 18ff4e9..5bbd1c8 100644
+--- a/alps/device/mediatek/mt6735/BoardConfig.mk
++++ b/alps/device/mediatek/mt6735/BoardConfig.mk
+@@ -152,3 +152,9 @@ include device/mediatek/build/build/tools/ptgen/$(MTK_PTGEN_CHIP)/ptgen.mk
+ BOARD_SEPOLICY_DIRS += device/mediatek/mt6735/sepolicy
+ 
+ MTK_GPU_VERSION := mali midgard r7p0
++
++#starmen add WITH_DEXPREOPT := true for power on speed 20160524
++ifeq ($(TARGET_BUILD_VARIANT),user)
++WITH_DEXPREOPT := true
++endif
++#starmen add end
+diff --git a/alps/device/zechin/zechin6735m_35g_m0/device.mk b/alps/device/zechin/zechin6735m_35g_m0/device.mk
+index 4424b00..a6a5359 100644
+--- a/alps/device/zechin/zechin6735m_35g_m0/device.mk
++++ b/alps/device/zechin/zechin6735m_35g_m0/device.mk
+@@ -38,7 +38,7 @@ MTK_ART_OPT_LOW_RAM_MODE := true
+ 
+ ifeq ($(TARGET_BUILD_VARIANT),user)
+ WITH_DEXPREOPT := true
+-DONT_DEXPREOPT_PREBUILTS := true
++#DONT_DEXPREOPT_PREBUILTS := true
+ endif
+ 
+ PRODUCT_COPY_FILES += device/zechin/$(MTK_TARGET_PROJECT)/media_codecs_mediatek_video.xml:system/etc/media_codecs_mediatek_video.xml
+diff --git a/alps/device/zechin/zechin6737m_35_m0/device.mk b/alps/device/zechin/zechin6737m_35_m0/device.mk
+index cc12c9a..d51d803 100644
+--- a/alps/device/zechin/zechin6737m_35_m0/device.mk
++++ b/alps/device/zechin/zechin6737m_35_m0/device.mk
+@@ -33,7 +33,7 @@ MTK_ART_OPT_ENABLE := true
+ 
+ ifeq ($(TARGET_BUILD_VARIANT),user)
+ WITH_DEXPREOPT := true
+-DONT_DEXPREOPT_PREBUILTS := true
++#DONT_DEXPREOPT_PREBUILTS := true
+ endif
+ 
+ PRODUCT_COPY_FILES += device/zechin/zechin6737m_35_m0/media_codecs_mediatek_video_gmo.xml:system/etc/media_codecs_mediatek_video.xml
+diff --git a/alps/device/zechin/zechin6737m_35g_m0/device.mk b/alps/device/zechin/zechin6737m_35g_m0/device.mk
+index 48d8af4..167af8f 100644
+--- a/alps/device/zechin/zechin6737m_35g_m0/device.mk
++++ b/alps/device/zechin/zechin6737m_35g_m0/device.mk
+@@ -38,7 +38,7 @@ MTK_ART_OPT_ENABLE := true
+ 
+ ifeq ($(TARGET_BUILD_VARIANT),user)
+ WITH_DEXPREOPT := true
+-DONT_DEXPREOPT_PREBUILTS := true
++#DONT_DEXPREOPT_PREBUILTS := true
+ endif
+ endif
+ 
+@@ -84,7 +84,7 @@ MTK_ART_OPT_ENABLE := true
+ 
+ ifeq ($(TARGET_BUILD_VARIANT),user)
+ WITH_DEXPREOPT := true
+-DONT_DEXPREOPT_PREBUILTS := true
++#DONT_DEXPREOPT_PREBUILTS := true
+ endif
+ 
+ PRODUCT_COPY_FILES += device/zechin/zechin6737m_35g_m0/media_codecs_mediatek_video_gmo.xml:system/etc/media_codecs_mediatek_video.xml
+diff --git a/alps/device/zechin/zechin6737t_35_m0/device.mk b/alps/device/zechin/zechin6737t_35_m0/device.mk
+index e776c6d..d23d8ad 100644
+--- a/alps/device/zechin/zechin6737t_35_m0/device.mk
++++ b/alps/device/zechin/zechin6737t_35_m0/device.mk
+@@ -33,7 +33,7 @@ MTK_ART_OPT_ENABLE := true
+ 
+ ifeq ($(TARGET_BUILD_VARIANT),user)
+ WITH_DEXPREOPT := true
+-DONT_DEXPREOPT_PREBUILTS := true
++#DONT_DEXPREOPT_PREBUILTS := true
+ endif
+ 
+ 
+diff --git a/alps/device/zechin/zechin6737t_35g_m0/device.mk b/alps/device/zechin/zechin6737t_35g_m0/device.mk
+index ed99aac..6b361c4 100644
+--- a/alps/device/zechin/zechin6737t_35g_m0/device.mk
++++ b/alps/device/zechin/zechin6737t_35g_m0/device.mk
+@@ -38,7 +38,7 @@ MTK_ART_OPT_ENABLE := true
+ 
+ ifeq ($(TARGET_BUILD_VARIANT),user)
+ WITH_DEXPREOPT := true
+-DONT_DEXPREOPT_PREBUILTS := true
++#DONT_DEXPREOPT_PREBUILTS := true
+ endif
+ endif
+ 
+@@ -83,7 +83,7 @@ MTK_ART_OPT_ENABLE := true
+ 
+ ifeq ($(TARGET_BUILD_VARIANT),user)
+ WITH_DEXPREOPT := true
+-DONT_DEXPREOPT_PREBUILTS := true
++#DONT_DEXPREOPT_PREBUILTS := true
+ endif
+ 
+ 
+diff --git a/alps/device/zechin/zechin6753_35g_m0/device.mk b/alps/device/zechin/zechin6753_35g_m0/device.mk
+index 68fdfd3..7b5468f 100644
+--- a/alps/device/zechin/zechin6753_35g_m0/device.mk
++++ b/alps/device/zechin/zechin6753_35g_m0/device.mk
+@@ -245,5 +245,5 @@ $(call inherit-product, build/target/product/verity.mk)
+ # enable dex_preopt optioin
+ ifeq ($(TARGET_BUILD_VARIANT),user)
+ WITH_DEXPREOPT := true
+-DONT_DEXPREOPT_PREBUILTS := true
++#DONT_DEXPREOPT_PREBUILTS := true
+ endif
+diff --git a/alps/device/zechin/zechin6753_65_m0/device.mk b/alps/device/zechin/zechin6753_65_m0/device.mk
+index b2b9732..2421d87 100644
+--- a/alps/device/zechin/zechin6753_65_m0/device.mk
++++ b/alps/device/zechin/zechin6753_65_m0/device.mk
+@@ -207,5 +207,5 @@ $(call inherit-product, build/target/product/verity.mk)
+ # enable dex_preopt optioin
+ ifeq ($(TARGET_BUILD_VARIANT),user)
+ WITH_DEXPREOPT := true
+-DONT_DEXPREOPT_PREBUILTS := true
++#DONT_DEXPREOPT_PREBUILTS := true
+ endif
