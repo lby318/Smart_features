@@ -1,0 +1,89 @@
+commit 06a9d9f896e959e7bd1bddc09aede0645a6d824e
+Author: liubinyang <liubinyang@hkzechin.com>
+Date:   Thu Dec 15 21:12:09 2016 +0800
+
+    [Bmobile][GMS][Sms]短信输入7bit特殊字符时，要求字数不减半，且解决CTS报错问题
+
+diff --git a/alps/frameworks/base/telephony/java/com/android/internal/telephony/GsmAlphabet.java b/alps/frameworks/base/telephony/java/com/android/internal/telephony/GsmAlphabet.java
+index ac4844d..11c38ea 100755
+--- a/alps/frameworks/base/telephony/java/com/android/internal/telephony/GsmAlphabet.java
++++ b/alps/frameworks/base/telephony/java/com/android/internal/telephony/GsmAlphabet.java
+@@ -311,7 +311,7 @@ public class GsmAlphabet {
+         int headerBits = (header.length + 1) * 8;
+         int headerSeptets = (headerBits + 6) / 7;
+ 
+-        byte[] ret = stringToGsm7BitPacked(data, headerSeptets, true, languageTable,
++        byte[] ret = stringToGsm7BitPacked(data, headerSeptets, false, languageTable,//darren modify,default is true
+                 languageShiftTable);
+ 
+         // Paste in the header
+@@ -361,7 +361,7 @@ public class GsmAlphabet {
+     public static byte[] stringToGsm7BitPacked(String data, int languageTable,
+             int languageShiftTable)
+             throws EncodeException {
+-        return stringToGsm7BitPacked(data, 0, true, languageTable, languageShiftTable);
++        return stringToGsm7BitPacked(data, 0, false, languageTable, languageShiftTable);//darren modify,default is true
+     }
+ 
+     /**
+diff --git a/alps/frameworks/opt/telephony/src/java/android/telephony/SmsMessage.java b/alps/frameworks/opt/telephony/src/java/android/telephony/SmsMessage.java
+index df3b0c4..6ea7a78 100644
+--- a/alps/frameworks/opt/telephony/src/java/android/telephony/SmsMessage.java
++++ b/alps/frameworks/opt/telephony/src/java/android/telephony/SmsMessage.java
+@@ -1150,7 +1150,7 @@ public class SmsMessage {
+                 com.android.internal.telephony.cdma.SmsMessage.calculateLength(
+                 text, false, encodingType) :
+                 com.android.internal.telephony.gsm.SmsMessage.calculateLength(
+-                text, false, encodingType);
++                text, true, encodingType);//darren modfiy,default is true
+ 
+         // TODO(cleanup): The code here could be rolled into the logic
+         // below cleanly if these MAX_* constants were defined more
+diff --git a/alps/frameworks/opt/telephony/src/java/com/android/internal/telephony/gsm/GsmSMSDispatcher.java b/alps/frameworks/opt/telephony/src/java/com/android/internal/telephony/gsm/GsmSMSDispatcher.java
+index bd4732e..f7c8539 100644
+--- a/alps/frameworks/opt/telephony/src/java/com/android/internal/telephony/gsm/GsmSMSDispatcher.java
++++ b/alps/frameworks/opt/telephony/src/java/com/android/internal/telephony/gsm/GsmSMSDispatcher.java
+@@ -825,7 +825,7 @@ public final class GsmSMSDispatcher extends SMSDispatcher {
+         }
+ 
+         int encoding = encodingType;
+-        TextEncodingDetails details = SmsMessage.calculateLength(text, false);
++        TextEncodingDetails details = SmsMessage.calculateLength(text, true);//@darren modify,default is true
+         if (encoding != details.codeUnitSize &&
+                 (encoding == SmsConstants.ENCODING_UNKNOWN ||
+                 encoding == SmsConstants.ENCODING_7BIT)) {
+diff --git a/alps/frameworks/opt/telephony/src/java/com/android/internal/telephony/gsm/SmsMessage.java b/alps/frameworks/opt/telephony/src/java/com/android/internal/telephony/gsm/SmsMessage.java
+index 024b274..d56b594 100644
+--- a/alps/frameworks/opt/telephony/src/java/com/android/internal/telephony/gsm/SmsMessage.java
++++ b/alps/frameworks/opt/telephony/src/java/com/android/internal/telephony/gsm/SmsMessage.java
+@@ -275,7 +275,7 @@ public class SmsMessage extends SmsMessageBase {
+ 
+         if (encoding == ENCODING_UNKNOWN) {
+             // Find the best encoding to use
+-            TextEncodingDetails ted = calculateLength(message, false);
++            TextEncodingDetails ted = calculateLength(message, true);//@darren modify,default is false
+             encoding = ted.codeUnitSize;
+             languageTable = ted.languageTable;
+             languageShiftTable = ted.languageShiftTable;
+@@ -2053,7 +2053,7 @@ public class SmsMessage extends SmsMessageBase {
+ 
+         if (encoding == ENCODING_UNKNOWN) {
+             // Find the best encoding to use
+-            TextEncodingDetails ted = calculateLength(message, false);
++            TextEncodingDetails ted = calculateLength(message, true);//@darren modify,default is false
+             encoding = ted.codeUnitSize;
+             languageTable = ted.languageTable;
+             languageShiftTable = ted.languageShiftTable;
+diff --git a/alps/vendor/mediatek/proprietary/packages/apps/Mms/src/com/android/mms/ui/ComposeMessageActivity.java b/alps/vendor/mediatek/proprietary/packages/apps/Mms/src/com/android/mms/ui/ComposeMessageActivity.java
+index 772b082..effd427 100755
+--- a/alps/vendor/mediatek/proprietary/packages/apps/Mms/src/com/android/mms/ui/ComposeMessageActivity.java
++++ b/alps/vendor/mediatek/proprietary/packages/apps/Mms/src/com/android/mms/ui/ComposeMessageActivity.java
+@@ -1027,7 +1027,7 @@ public class ComposeMessageActivity extends Activity
+ 
+         encodingType = mOpComposeExt.getSmsEncodingType(encodingType, ComposeMessageActivity.this);
+ 
+-        params = SmsMessage.calculateLength(text, false, encodingType);
++        params = SmsMessage.calculateLength(text, true, encodingType);//@darren modify,default is false
+             /* SmsMessage.calculateLength returns an int[4] with:
+              *   int[0] being the number of SMS's required,
+              *   int[1] the number of code units used,
