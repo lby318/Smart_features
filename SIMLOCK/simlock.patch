@@ -1,0 +1,1758 @@
+commit aa5f9187bd16694b23b6a3f8bde45e51d0ccc456
+Author: liubinyang <liubinyang@hkzechin.com>
+Date:   Tue Aug 30 18:04:20 2016 +0800
+
+    [Bmobile][SIMLOCK]增加Bmobile锁网需求，手动上锁码*#26872016*#，解锁码IMEI前14位，从第一位起，每相邻两位相加模以10为一位，取IMEI第15位做为第8位，生成解锁码，为方便看锁网状态在*#2687#查内部版本号时显示锁网状态UNLOCK/LOCK
+
+diff --git a/alps/frameworks/base/packages/Keyguard/AndroidManifest.xml b/alps/frameworks/base/packages/Keyguard/AndroidManifest.xml
+old mode 100644
+new mode 100755
+index aca0b8e..9b5dda1
+--- a/alps/frameworks/base/packages/Keyguard/AndroidManifest.xml
++++ b/alps/frameworks/base/packages/Keyguard/AndroidManifest.xml
+@@ -18,8 +18,9 @@
+ -->
+ <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+     package="com.android.keyguard"
+-    android:sharedUserId="android.uid.systemui"
+-    coreApp="true">
++    coreApp="true"
++    android:sharedUserId="android.uid.system">
++    
+     <uses-sdk android:minSdkVersion="10" android:targetSdkVersion="17"/>
+     <uses-permission android:name="android.permission.VIBRATE" />
+     <uses-permission android:name="android.permission.MODIFY_PHONE_STATE" />
+diff --git a/alps/frameworks/base/packages/Keyguard/res_ext/values-es-rUS/mtk_strings.xml b/alps/frameworks/base/packages/Keyguard/res_ext/values-es-rUS/mtk_strings.xml
+index 2520b8e..0ab2938 100755
+--- a/alps/frameworks/base/packages/Keyguard/res_ext/values-es-rUS/mtk_strings.xml
++++ b/alps/frameworks/base/packages/Keyguard/res_ext/values-es-rUS/mtk_strings.xml
+@@ -42,9 +42,9 @@
+     <string name="keyguard_password_enter_new_pin_code">Ingresar nuevo PIN</string>
+     <string name="keyguard_password_Confirm_pin_code">"Confirmar PIN nuevo"</string>
+     <string name="sim_permanently_locked">Si ingresa el código PUK más de 10 veces, la tarjeta SIM se bloqueará permanentemente.</string>
+-    <string name="retries_left">Sigue siendo:<xliff:g id="number">%d</xliff:g></string>
++    <string name="retries_left">Intentos restantes:<xliff:g id="number">%d</xliff:g></string>
+     <string name="simlock_slot_locked_message">La ranura ha sido bloqueada permanentemente</string>
+-    <string name="simlock_entersimmelock">Ingresar bloqueo ME de SIM</string>
++    <string name="simlock_entersimmelock">Ingrese codigo</string>
+     <string name="slot_id">Ranura <xliff:g id="number">%d</xliff:g>:</string>
+     <string name="new_simcard">Nueva tarjeta SIM</string>
+     <string name="lockscreen_missing_sim_dialog_message">"Tarjeta SIM desconectada. Asegúrese de que su tarjeta SIM esté conectada de modo seguro."</string>
+diff --git a/alps/frameworks/base/packages/Keyguard/src/com/android/keyguard/KeyguardSecurityModel.java b/alps/frameworks/base/packages/Keyguard/src/com/android/keyguard/KeyguardSecurityModel.java
+old mode 100644
+new mode 100755
+index 2a7d184..bf0edd6
+--- a/alps/frameworks/base/packages/Keyguard/src/com/android/keyguard/KeyguardSecurityModel.java
++++ b/alps/frameworks/base/packages/Keyguard/src/com/android/keyguard/KeyguardSecurityModel.java
+@@ -174,7 +174,8 @@ public class KeyguardSecurityModel {
+                 || (simState == IccCardConstants.State.NETWORK_LOCKED
+                 && !updateMonitor.getPinPukMeDismissFlagOfPhoneId(phoneId)
+                 && updateMonitor.getSimMeLeftRetryCountOfPhoneId(phoneId) != 0
+-                && KeyguardUtils.isMediatekSimMeLockSupport())
++                && KeyguardUtils.isMediatekSimMeLockSupport()
++                &&(updateMonitor.readData() !=1))//@darren 20160820 modify for not show SIM lock screen when phone unloked
+                 );
+         } else {
+             return false;
+diff --git a/alps/frameworks/base/packages/Keyguard/src/com/android/keyguard/KeyguardUpdateMonitor.java b/alps/frameworks/base/packages/Keyguard/src/com/android/keyguard/KeyguardUpdateMonitor.java
+old mode 100644
+new mode 100755
+index f3d31e4..d0a84df
+--- a/alps/frameworks/base/packages/Keyguard/src/com/android/keyguard/KeyguardUpdateMonitor.java
++++ b/alps/frameworks/base/packages/Keyguard/src/com/android/keyguard/KeyguardUpdateMonitor.java
+@@ -89,6 +89,8 @@ import static android.os.BatteryManager.EXTRA_LEVEL;
+ import static android.os.BatteryManager.EXTRA_PLUGGED;
+ import static android.os.BatteryManager.EXTRA_STATUS;
+ 
++import android.os.IBinder; //jianqiu add 20150424
++
+ /**
+  * Watches for updates that may be interesting to the keyguard, and provides
+  * the up to date information as well as a registration for callbacks that care
+@@ -781,7 +783,13 @@ public class KeyguardUpdateMonitor implements TrustManager.TrustListener {
+             //if (KeyguardUtils.isMediatekSimMeLockSupport()) {
+             /// M: to create new thread to query SIM ME lock status
+             /// after finish query, send MSG_SIM_STATE_CHANGE message
+-            new simMeStatusQueryThread(simArgs).start();
++            //new simMeStatusQueryThread(simArgs).start();
++ 	    	if( readData() == 1 ){//unlock
++            	new simMeCheckThread(simArgs.subId, "12345678").start();//12345678: this password is set in modem
++            } else {
++                new simMeStatusQueryThread(simArgs).start();
++            }
++	    //End add                
+         } else {
+             mHandler.sendMessage(mHandler.obtainMessage(MSG_SIM_STATE_CHANGE, simArgs));
+         }
+@@ -859,6 +867,80 @@ public class KeyguardUpdateMonitor implements TrustManager.TrustListener {
+     private CancellationSignal mFingerprintCancelSignal;
+     private FingerprintManager mFpm;
+ 
++
++    //jianqiu add 20150423 for SIM_ME_LOCK
++    private class simMeCheckThread extends Thread {
++        int mSubId;
++        String mPasswd;
++         private int mResult;
++
++        simMeCheckThread(int mSubId, String mPasswd) {
++            this.mSubId = mSubId;
++            this.mPasswd = mPasswd;
++        }
++
++        @Override
++        public void run() {
++            try {
++                Log.d(TAG, "simMeCheckThread-run() mSimId =" + mSubId +" mPasswd ="+mPasswd);
++                //mResult = ITelephonyEx.Stub.asInterface(ServiceManager.checkService("phoneEx")).supplyNetworkDepersonalization(
++                        //mPasswd, mSimId);
++                mResult = ITelephonyEx.Stub.asInterface(ServiceManager.getService("phoneEx"))
++                        .supplyNetworkDepersonalization(mSubId,mPasswd);
++				
++                Log.d(TAG, "simMeCheckThread-run()done mResult =" + mResult);
++
++            } catch (Exception e) {
++                Log.e(TAG, "supplyNetworkDepersonalization got exception: " + e.getMessage());
++            }
++        }
++    }
++    //End add
++
++    
++ /// The previous lines are provided and maintained by Mediatek Inc.
++   // private static final int file_lid=36;            //AP_CFG_REEB_PRODUCT_INFO_LID=36
++    private static final int file_lid_index=1023;    //Use for salestrack
++    public  static final byte file_lid_success=0x3c; //Use for salestrack
++    public  static final byte file_lid_redo=0x43;    //Use for salestrack
++    public static void writeData(byte data) {
++	//xjc change here read by filename	
++	 final String LOCK_ADDRESS_FILENAME = "/data/nvram/APCFG/APRDEB/PRODUCT_INFO";
++   try {	 
++        IBinder binder = ServiceManager.getService("NvRAMAgent");
++        NvRAMAgent agent = NvRAMAgent.Stub.asInterface(binder);
++        byte[] buff = agent.readFileByName(LOCK_ADDRESS_FILENAME);
++     
++         //   buff = agent .readFile(file_lid);// read buffer from nvram
++            buff[file_lid_index] = data;
++            if (agent.writeFileByName(LOCK_ADDRESS_FILENAME, buff) > 0) {
++                Log.d(TAG, "write success addr = " + data);
++            } else {
++                Log.d(TAG, "write failed addr = " + buff[file_lid_index]);
++            }
++        } catch (RemoteException e) {
++            // TODO Auto-generated catch block
++            e.printStackTrace();
++        }
++    }
++
++    public static byte readData() {
++	 final String LOCK_ADDRESS_FILENAME = "/data/nvram/APCFG/APRDEB/PRODUCT_INFO"; 	        
++	 try { 
++	 	IBinder binder = ServiceManager.getService("NvRAMAgent");
++        	NvRAMAgent agent = NvRAMAgent.Stub.asInterface(binder);
++        	 byte[] buff = agent.readFileByName(LOCK_ADDRESS_FILENAME);
++         	 Log.d(TAG, "read success addr = " + buff[file_lid_index]);
++            return buff[file_lid_index];
++        } catch (RemoteException e) {
++            // TODO Auto-generated catch block
++            e.printStackTrace();
++        }
++        Log.d(TAG, "read failed return -1");
++        return -1;
++    }
++
++
+     /**
+      * When we receive a
+      * {@link com.android.internal.telephony.TelephonyIntents#ACTION_SIM_STATE_CHANGED} broadcast,
+diff --git a/alps/frameworks/base/packages/Keyguard/src/com/android/keyguard/NvRAMAgent.java b/alps/frameworks/base/packages/Keyguard/src/com/android/keyguard/NvRAMAgent.java
+new file mode 100755
+index 0000000..62a49a2
+--- /dev/null
++++ b/alps/frameworks/base/packages/Keyguard/src/com/android/keyguard/NvRAMAgent.java
+@@ -0,0 +1,271 @@
++/* Copyright Statement:
++ *
++ * This software/firmware and related documentation ("MediaTek Software") are
++ * protected under relevant copyright laws. The information contained herein is
++ * confidential and proprietary to MediaTek Inc. and/or its licensors. Without
++ * the prior written permission of MediaTek inc. and/or its licensors, any
++ * reproduction, modification, use or disclosure of MediaTek Software, and
++ * information contained herein, in whole or in part, shall be strictly
++ * prohibited.
++ *
++ * MediaTek Inc. (C) 2010. All rights reserved.
++ *
++ * BY OPENING THIS FILE, RECEIVER HEREBY UNEQUIVOCALLY ACKNOWLEDGES AND AGREES
++ * THAT THE SOFTWARE/FIRMWARE AND ITS DOCUMENTATIONS ("MEDIATEK SOFTWARE")
++ * RECEIVED FROM MEDIATEK AND/OR ITS REPRESENTATIVES ARE PROVIDED TO RECEIVER
++ * ON AN "AS-IS" BASIS ONLY. MEDIATEK EXPRESSLY DISCLAIMS ANY AND ALL
++ * WARRANTIES, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED
++ * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE OR
++ * NONINFRINGEMENT. NEITHER DOES MEDIATEK PROVIDE ANY WARRANTY WHATSOEVER WITH
++ * RESPECT TO THE SOFTWARE OF ANY THIRD PARTY WHICH MAY BE USED BY,
++ * INCORPORATED IN, OR SUPPLIED WITH THE MEDIATEK SOFTWARE, AND RECEIVER AGREES
++ * TO LOOK ONLY TO SUCH THIRD PARTY FOR ANY WARRANTY CLAIM RELATING THERETO.
++ * RECEIVER EXPRESSLY ACKNOWLEDGES THAT IT IS RECEIVER'S SOLE RESPONSIBILITY TO
++ * OBTAIN FROM ANY THIRD PARTY ALL PROPER LICENSES CONTAINED IN MEDIATEK
++ * SOFTWARE. MEDIATEK SHALL ALSO NOT BE RESPONSIBLE FOR ANY MEDIATEK SOFTWARE
++ * RELEASES MADE TO RECEIVER'S SPECIFICATION OR TO CONFORM TO A PARTICULAR
++ * STANDARD OR OPEN FORUM. RECEIVER'S SOLE AND EXCLUSIVE REMEDY AND MEDIATEK'S
++ * ENTIRE AND CUMULATIVE LIABILITY WITH RESPECT TO THE MEDIATEK SOFTWARE
++ * RELEASED HEREUNDER WILL BE, AT MEDIATEK'S OPTION, TO REVISE OR REPLACE THE
++ * MEDIATEK SOFTWARE AT ISSUE, OR REFUND ANY SOFTWARE LICENSE FEES OR SERVICE
++ * CHARGE PAID BY RECEIVER TO MEDIATEK FOR SUCH MEDIATEK SOFTWARE AT ISSUE.
++ *
++ * The following software/firmware and/or related documentation ("MediaTek
++ * Software") have been modified by MediaTek Inc. All revisions are subject to
++ * any receiver's applicable license agreements with MediaTek Inc.
++ */
++
++/*
++ * This file is auto-generated.  DO NOT MODIFY.
++ * Original file: NvRAMAgent.aidl
++ */
++
++//package com.android.internal.policy.impl.keyguard;
++package com.android.keyguard;
++
++
++import java.lang.String;
++import android.os.RemoteException;
++import android.os.IBinder;
++import android.os.IInterface;
++import android.os.Binder;
++import android.os.Parcel;
++public interface NvRAMAgent extends android.os.IInterface
++{
++	/** Local-side IPC implementation stub class. */
++	public static abstract class Stub extends android.os.Binder implements NvRAMAgent
++	{
++		private static final java.lang.String DESCRIPTOR = "NvRAMAgent";
++		/** Construct the stub at attach it to the interface. */
++		public Stub()
++		{
++			this.attachInterface(this, DESCRIPTOR);
++		}
++		/**
++		 * Cast an IBinder object into an NvRAMAgent interface,
++		 * generating a proxy if needed.
++		 */
++		 
++		public static NvRAMAgent asInterface(android.os.IBinder obj)
++		{
++			if ((obj==null)) {
++				return null;
++			}
++			
++			android.os.IInterface iin = (android.os.IInterface)obj.queryLocalInterface(DESCRIPTOR);
++			if (((iin!=null)&&(iin instanceof NvRAMAgent))) {
++				return ((NvRAMAgent)iin);
++			}
++			
++			return new NvRAMAgent.Stub.Proxy(obj);
++		}
++		
++		public android.os.IBinder asBinder()
++		{
++			return this;
++		}
++		public boolean onTransact(int code, android.os.Parcel data, android.os.Parcel reply, int flags) throws android.os.RemoteException
++		{
++			switch (code)
++			{
++				case INTERFACE_TRANSACTION:
++				{
++					reply.writeString(DESCRIPTOR);
++					return true;
++				}
++				case TRANSACTION_readFile:
++				{
++					data.enforceInterface(DESCRIPTOR);
++					int _arg0;
++					_arg0 = data.readInt();
++					byte[] _result = this.readFile(_arg0);
++					reply.writeNoException();
++					reply.writeByteArray(_result);
++					return true;
++				}
++				case TRANSACTION_writeFile:
++				{
++					data.enforceInterface(DESCRIPTOR);
++					int _arg0;
++					_arg0 = data.readInt();
++					byte[] _arg1;
++					_arg1 = data.createByteArray();
++					int _result = this.writeFile(_arg0, _arg1);
++					reply.writeNoException();
++					reply.writeInt(_result);
++					return true;
++				}
++				case TRANSACTION_readFileByName:
++				{
++					data.enforceInterface(DESCRIPTOR);
++					System.out.println("NVRAM TRANSACTION_readFile="+data.readString());
++					String _arg0;
++					_arg0 = data.readString();
++					byte[] _result = this.readFileByName(_arg0);
++					reply.writeNoException();
++					reply.writeByteArray(_result);
++					return true;
++				}
++				
++				case TRANSACTION_writeFileByName:
++				{
++					data.enforceInterface(DESCRIPTOR);
++						String _arg0;
++					_arg0 = data.readString();
++					
++					
++					System.out.println("NVRAM TRANSACTION_writeFile="+data.readString());
++					byte[] _arg1;
++					_arg1 = data.createByteArray();
++					int _result = this.writeFileByName(_arg0, _arg1);
++					reply.writeNoException();
++					reply.writeInt(_result);
++					return true;
++				}
++			}
++			
++			return super.onTransact(code, data, reply, flags);
++		}
++		
++		private static class Proxy implements NvRAMAgent
++		{
++			private android.os.IBinder mRemote;
++			Proxy(android.os.IBinder remote)
++			{
++				mRemote = remote;
++			}
++			
++			public android.os.IBinder asBinder()
++			{
++				return mRemote;
++			}
++			
++			public java.lang.String getInterfaceDescriptor()
++			{
++				return DESCRIPTOR;
++			}
++			
++			public byte[] readFile(int file_lid) throws android.os.RemoteException
++			{
++				android.os.Parcel _data = android.os.Parcel.obtain();
++				android.os.Parcel _reply = android.os.Parcel.obtain();
++				byte[] _result;
++				try {
++					_data.writeInterfaceToken(DESCRIPTOR);
++					_data.writeInt(file_lid);
++					mRemote.transact(Stub.TRANSACTION_readFile, _data, _reply, 0);
++					_reply.readException();
++					_result = _reply.createByteArray();
++				}
++				
++				finally {
++					_reply.recycle();
++					_data.recycle();
++				}
++				return _result;
++			}
++		
++			public int writeFile(int file_lid, byte[] buff) throws android.os.RemoteException
++			{
++				android.os.Parcel _data = android.os.Parcel.obtain();
++				android.os.Parcel _reply = android.os.Parcel.obtain();
++				int _result;
++				try {
++					_data.writeInterfaceToken(DESCRIPTOR);
++					_data.writeInt(file_lid);
++					_data.writeByteArray(buff);
++					mRemote.transact(Stub.TRANSACTION_writeFile, _data, _reply, 0);
++					_reply.readException();
++					_result = _reply.readInt();
++				}
++				finally {
++					_reply.recycle();
++					_data.recycle();
++				}
++				return _result;
++			}
++			
++			public byte[] readFileByName(String filename) throws android.os.RemoteException
++			{
++				android.os.Parcel _data = android.os.Parcel.obtain();
++				android.os.Parcel _reply = android.os.Parcel.obtain();
++				byte[] _result;
++
++				try 
++				{
++					_data.writeInterfaceToken(DESCRIPTOR);
++
++					_data.writeString(filename);
++					mRemote.transact(Stub.TRANSACTION_readFileByName, _data, _reply, 0);
++					_reply.readException();
++					_result = _reply.createByteArray();
++				}
++				finally 
++				{
++					_reply.recycle();
++					_data.recycle();
++				}
++				return _result;
++			}
++			public int writeFileByName(String filename, byte[] buff) throws android.os.RemoteException
++			{
++				android.os.Parcel _data = android.os.Parcel.obtain();
++				android.os.Parcel _reply = android.os.Parcel.obtain();
++				int _result;
++
++				
++					
++				System.out.println("writeFile"+filename);	
++					
++				try 
++				{
++					_data.writeInterfaceToken(DESCRIPTOR);
++					_data.writeString(filename);
++
++					_data.writeByteArray(buff);
++					mRemote.transact(Stub.TRANSACTION_writeFileByName, _data, _reply, 0);
++					_reply.readException();
++					_result = _reply.readInt();
++				}
++				finally 
++				{
++					_reply.recycle();
++					_data.recycle();
++				}
++				return _result;
++			}
++			
++			
++			
++		}
++static final int TRANSACTION_readFile = (IBinder.FIRST_CALL_TRANSACTION + 0);
++static final int TRANSACTION_writeFile = (IBinder.FIRST_CALL_TRANSACTION + 1);
++static final int TRANSACTION_readFileByName = (IBinder.FIRST_CALL_TRANSACTION + 2);
++static final int TRANSACTION_writeFileByName = (IBinder.FIRST_CALL_TRANSACTION + 3);
++
++	}
++public byte[] readFile(int file_lid) throws android.os.RemoteException;
++public int writeFile(int file_lid, byte[] buff) throws android.os.RemoteException;
++public byte[] readFileByName(String filename) throws android.os.RemoteException;
++public int writeFileByName(String filename, byte[] buff) throws android.os.RemoteException;
++}
+diff --git a/alps/frameworks/base/packages/Keyguard/src/com/mediatek/keyguard/Telephony/KeyguardSimPinPukMeView.java b/alps/frameworks/base/packages/Keyguard/src/com/mediatek/keyguard/Telephony/KeyguardSimPinPukMeView.java
+index 34909d6..b2adcb8 100755
+--- a/alps/frameworks/base/packages/Keyguard/src/com/mediatek/keyguard/Telephony/KeyguardSimPinPukMeView.java
++++ b/alps/frameworks/base/packages/Keyguard/src/com/mediatek/keyguard/Telephony/KeyguardSimPinPukMeView.java
+@@ -70,6 +70,14 @@ import com.mediatek.keyguard.ext.IKeyguardUtilExt;
+ import com.mediatek.keyguard.ext.IOperatorSIMString;
+ import com.mediatek.keyguard.ext.IOperatorSIMString.SIMChangedTag;
+ 
++/*jianqiu add 20150422 for sim lock*/
++import android.os.RemoteException;
++import android.os.ServiceManager;
++import android.os.SystemProperties;
++import android.os.IBinder;
++import android.telephony.TelephonyManager;
++/*jianqiu add end*/
++
+ /**
+  * M: Displays a PIN/PUK pad for unlocking.
+  */
+@@ -115,7 +123,7 @@ public class KeyguardSimPinPukMeView extends KeyguardPinBasedInputView {
+     private static final int STATE_ENTER_FINISH = 4;
+     private static final int STATE_ENTER_ME = 5;
+     // Lock category name string Temp use for QA/RD
+-    private String[] strLockName = {" [NP]", " [NSP]", " [SP]", " [CP]", " [SIMP]"};
++    private String[] strLockName = {" NP", " [NSP]", " [SP]", " [CP]", " [SIMP]"};
+     private static final int SIMPINPUK_WAIT_STATE_CHANGE_TIMEOUT = 6000; //ms
+ 
+     /// M: for get the proper SIM UIM string according to operator.
+@@ -719,11 +727,26 @@ public class KeyguardSimPinPukMeView extends KeyguardPinBasedInputView {
+         public void run() {
+             try {
+                 Log.d(TAG, "CheckMe, " + "mPhoneId =" + mPhoneId);
++//starmen modify begin 20140826 to unlock sim-me according of imei string
++                String password = "01234567";
++     
++                if(verifyUnlockPwd(mPasswd)){
++                	password = "12345678";
++                }
++		
++				
+                 int subId = KeyguardUtils.getSubIdUsingPhoneId(mPhoneId) ;
+                 mResult = ITelephonyEx.Stub.asInterface(ServiceManager.getService("phoneEx"))
+-                        .supplyNetworkDepersonalization(subId, mPasswd);
+-                Log.d(TAG, "CheckMe, " + "mPhoneId =" + mPhoneId + " mResult=" + mResult);
+-
++                        .supplyNetworkDepersonalization(subId, password);//mPasswd
++                Log.d(TAG, "darren for test 20160819 CheckMe, " + "mPhoneId =" + mPhoneId + " mResult=" + mResult);
++	
++		//Begin xsx add 
++		if( mResult == VERIFY_RESULT_PASS )
++		{
++			writeData( (byte)1 );
++		}//End add				
++		//starmen modify end 20140826 to unlock sim-me according of imei string	
++		
+                 if (VERIFY_RESULT_PASS == mResult) {
+                     // Create timer then wait for SIM_STATE_CHANGE for ready or network_lock
+                     Log.d(TAG, "CheckSimMe.run(), VERIFY_RESULT_PASS == ret,"
+@@ -747,6 +770,87 @@ public class KeyguardSimPinPukMeView extends KeyguardPinBasedInputView {
+         }
+     }
+ 
++
++     /// The previous lines are provided and maintained by Mediatek Inc.
++   // private static final int file_lid=36;            //AP_CFG_REEB_PRODUCT_INFO_LID=36
++    private static final int file_lid_index=1023;    //Use for salestrack
++    public  static final byte file_lid_success=0x3c; //Use for salestrack
++    public  static final byte file_lid_redo=0x43;    //Use for salestrack
++    public static void writeData(byte data) {
++	//xjc change here read by filename	
++	 final String LOCK_ADDRESS_FILENAME = "/data/nvram/APCFG/APRDEB/PRODUCT_INFO";
++   try {	 
++        IBinder binder = ServiceManager.getService("NvRAMAgent");
++        NvRAMAgent agent = NvRAMAgent.Stub.asInterface(binder);
++        byte[] buff = agent.readFileByName(LOCK_ADDRESS_FILENAME);
++     
++         //   buff = agent .readFile(file_lid);// read buffer from nvram
++            buff[file_lid_index] = data;
++            if (agent.writeFileByName(LOCK_ADDRESS_FILENAME, buff) > 0) {
++                Log.d(TAG, "write success addr = " + data);
++            } else {
++                Log.d(TAG, "write failed addr = " + buff[file_lid_index]);
++            }
++        } catch (RemoteException e) {
++            // TODO Auto-generated catch block
++            e.printStackTrace();
++        }
++    }
++
++    public static byte readData() {
++	 final String LOCK_ADDRESS_FILENAME = "/data/nvram/APCFG/APRDEB/PRODUCT_INFO"; 	        
++	 try { 
++	 	IBinder binder = ServiceManager.getService("NvRAMAgent");
++        	NvRAMAgent agent = NvRAMAgent.Stub.asInterface(binder);
++        	 byte[] buff = agent.readFileByName(LOCK_ADDRESS_FILENAME);
++         	 Log.d(TAG, "read success addr = " + buff[file_lid_index]);
++            return buff[file_lid_index];
++        } catch (RemoteException e) {
++            // TODO Auto-generated catch block
++            e.printStackTrace();
++        }
++        Log.d(TAG, "read failed return -1");
++        return -1;
++    }
++	
++
++
++
++//starmen modify begin 20140826 to unlock sim-me according of imei string
++    private boolean verifyUnlockPwd(String input){
++    	final String pwd = createPwdAccordingOfImei();
++    	Log.d(TAG,">>>>>>>>>>>>>Created pwd = "+pwd);
++    	if(input != null && input.equals(pwd)){
++    		return true;
++    	}
++    	
++    	return false;
++    }
++    private String createPwdAccordingOfImei(){
++    	
++    	TelephonyManager tm = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
++    	
++    	String imei = tm.getDeviceId();
++    	Log.d(TAG,">>>>>>>>>>>>>>>>>>>>Imei = "+imei);
++    	if(imei == null || imei.length() != 15){//The length of imei is 15.
++    		return null;
++    	}
++    	
++    	char[] chars = imei.toCharArray();
++    	
++    	StringBuffer sb = new StringBuffer(8);
++    	for(int i=0;i<15-2;i+=2){
++    		int a = Integer.valueOf(String.valueOf(chars[i]));
++    		int b = Integer.valueOf(String.valueOf(chars[i+1]));
++    		sb.append(String.valueOf((a+b)%10));
++    	}
++    	sb.append(String.valueOf(chars[14]));
++    	
++    	return sb.toString();
++    	
++    }
++//starmen modify end 20140826 to unlock sim-me according of imei string
++
+     private Dialog getSimUnlockProgressDialog() {
+         if (mSimUnlockProgressDialog == null) {
+             mSimUnlockProgressDialog = new ProgressDialog(mContext);
+diff --git a/alps/frameworks/base/packages/Keyguard/src/com/mediatek/keyguard/Telephony/NvRAMAgent.java b/alps/frameworks/base/packages/Keyguard/src/com/mediatek/keyguard/Telephony/NvRAMAgent.java
+new file mode 100755
+index 0000000..a908222
+--- /dev/null
++++ b/alps/frameworks/base/packages/Keyguard/src/com/mediatek/keyguard/Telephony/NvRAMAgent.java
+@@ -0,0 +1,271 @@
++/* Copyright Statement:
++ *
++ * This software/firmware and related documentation ("MediaTek Software") are
++ * protected under relevant copyright laws. The information contained herein is
++ * confidential and proprietary to MediaTek Inc. and/or its licensors. Without
++ * the prior written permission of MediaTek inc. and/or its licensors, any
++ * reproduction, modification, use or disclosure of MediaTek Software, and
++ * information contained herein, in whole or in part, shall be strictly
++ * prohibited.
++ *
++ * MediaTek Inc. (C) 2010. All rights reserved.
++ *
++ * BY OPENING THIS FILE, RECEIVER HEREBY UNEQUIVOCALLY ACKNOWLEDGES AND AGREES
++ * THAT THE SOFTWARE/FIRMWARE AND ITS DOCUMENTATIONS ("MEDIATEK SOFTWARE")
++ * RECEIVED FROM MEDIATEK AND/OR ITS REPRESENTATIVES ARE PROVIDED TO RECEIVER
++ * ON AN "AS-IS" BASIS ONLY. MEDIATEK EXPRESSLY DISCLAIMS ANY AND ALL
++ * WARRANTIES, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED
++ * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE OR
++ * NONINFRINGEMENT. NEITHER DOES MEDIATEK PROVIDE ANY WARRANTY WHATSOEVER WITH
++ * RESPECT TO THE SOFTWARE OF ANY THIRD PARTY WHICH MAY BE USED BY,
++ * INCORPORATED IN, OR SUPPLIED WITH THE MEDIATEK SOFTWARE, AND RECEIVER AGREES
++ * TO LOOK ONLY TO SUCH THIRD PARTY FOR ANY WARRANTY CLAIM RELATING THERETO.
++ * RECEIVER EXPRESSLY ACKNOWLEDGES THAT IT IS RECEIVER'S SOLE RESPONSIBILITY TO
++ * OBTAIN FROM ANY THIRD PARTY ALL PROPER LICENSES CONTAINED IN MEDIATEK
++ * SOFTWARE. MEDIATEK SHALL ALSO NOT BE RESPONSIBLE FOR ANY MEDIATEK SOFTWARE
++ * RELEASES MADE TO RECEIVER'S SPECIFICATION OR TO CONFORM TO A PARTICULAR
++ * STANDARD OR OPEN FORUM. RECEIVER'S SOLE AND EXCLUSIVE REMEDY AND MEDIATEK'S
++ * ENTIRE AND CUMULATIVE LIABILITY WITH RESPECT TO THE MEDIATEK SOFTWARE
++ * RELEASED HEREUNDER WILL BE, AT MEDIATEK'S OPTION, TO REVISE OR REPLACE THE
++ * MEDIATEK SOFTWARE AT ISSUE, OR REFUND ANY SOFTWARE LICENSE FEES OR SERVICE
++ * CHARGE PAID BY RECEIVER TO MEDIATEK FOR SUCH MEDIATEK SOFTWARE AT ISSUE.
++ *
++ * The following software/firmware and/or related documentation ("MediaTek
++ * Software") have been modified by MediaTek Inc. All revisions are subject to
++ * any receiver's applicable license agreements with MediaTek Inc.
++ */
++
++/*
++ * This file is auto-generated.  DO NOT MODIFY.
++ * Original file: NvRAMAgent.aidl
++ */
++
++//package com.android.internal.policy.impl.keyguard;
++package com.mediatek.keyguard.Telephony;
++
++
++import java.lang.String;
++import android.os.RemoteException;
++import android.os.IBinder;
++import android.os.IInterface;
++import android.os.Binder;
++import android.os.Parcel;
++public interface NvRAMAgent extends android.os.IInterface
++{
++	/** Local-side IPC implementation stub class. */
++	public static abstract class Stub extends android.os.Binder implements NvRAMAgent
++	{
++		private static final java.lang.String DESCRIPTOR = "NvRAMAgent";
++		/** Construct the stub at attach it to the interface. */
++		public Stub()
++		{
++			this.attachInterface(this, DESCRIPTOR);
++		}
++		/**
++		 * Cast an IBinder object into an NvRAMAgent interface,
++		 * generating a proxy if needed.
++		 */
++		 
++		public static NvRAMAgent asInterface(android.os.IBinder obj)
++		{
++			if ((obj==null)) {
++				return null;
++			}
++			
++			android.os.IInterface iin = (android.os.IInterface)obj.queryLocalInterface(DESCRIPTOR);
++			if (((iin!=null)&&(iin instanceof NvRAMAgent))) {
++				return ((NvRAMAgent)iin);
++			}
++			
++			return new NvRAMAgent.Stub.Proxy(obj);
++		}
++		
++		public android.os.IBinder asBinder()
++		{
++			return this;
++		}
++		public boolean onTransact(int code, android.os.Parcel data, android.os.Parcel reply, int flags) throws android.os.RemoteException
++		{
++			switch (code)
++			{
++				case INTERFACE_TRANSACTION:
++				{
++					reply.writeString(DESCRIPTOR);
++					return true;
++				}
++				case TRANSACTION_readFile:
++				{
++					data.enforceInterface(DESCRIPTOR);
++					int _arg0;
++					_arg0 = data.readInt();
++					byte[] _result = this.readFile(_arg0);
++					reply.writeNoException();
++					reply.writeByteArray(_result);
++					return true;
++				}
++				case TRANSACTION_writeFile:
++				{
++					data.enforceInterface(DESCRIPTOR);
++					int _arg0;
++					_arg0 = data.readInt();
++					byte[] _arg1;
++					_arg1 = data.createByteArray();
++					int _result = this.writeFile(_arg0, _arg1);
++					reply.writeNoException();
++					reply.writeInt(_result);
++					return true;
++				}
++				case TRANSACTION_readFileByName:
++				{
++					data.enforceInterface(DESCRIPTOR);
++					System.out.println("NVRAM TRANSACTION_readFile="+data.readString());
++					String _arg0;
++					_arg0 = data.readString();
++					byte[] _result = this.readFileByName(_arg0);
++					reply.writeNoException();
++					reply.writeByteArray(_result);
++					return true;
++				}
++				
++				case TRANSACTION_writeFileByName:
++				{
++					data.enforceInterface(DESCRIPTOR);
++						String _arg0;
++					_arg0 = data.readString();
++					
++					
++					System.out.println("NVRAM TRANSACTION_writeFile="+data.readString());
++					byte[] _arg1;
++					_arg1 = data.createByteArray();
++					int _result = this.writeFileByName(_arg0, _arg1);
++					reply.writeNoException();
++					reply.writeInt(_result);
++					return true;
++				}
++			}
++			
++			return super.onTransact(code, data, reply, flags);
++		}
++		
++		private static class Proxy implements NvRAMAgent
++		{
++			private android.os.IBinder mRemote;
++			Proxy(android.os.IBinder remote)
++			{
++				mRemote = remote;
++			}
++			
++			public android.os.IBinder asBinder()
++			{
++				return mRemote;
++			}
++			
++			public java.lang.String getInterfaceDescriptor()
++			{
++				return DESCRIPTOR;
++			}
++			
++			public byte[] readFile(int file_lid) throws android.os.RemoteException
++			{
++				android.os.Parcel _data = android.os.Parcel.obtain();
++				android.os.Parcel _reply = android.os.Parcel.obtain();
++				byte[] _result;
++				try {
++					_data.writeInterfaceToken(DESCRIPTOR);
++					_data.writeInt(file_lid);
++					mRemote.transact(Stub.TRANSACTION_readFile, _data, _reply, 0);
++					_reply.readException();
++					_result = _reply.createByteArray();
++				}
++				
++				finally {
++					_reply.recycle();
++					_data.recycle();
++				}
++				return _result;
++			}
++		
++			public int writeFile(int file_lid, byte[] buff) throws android.os.RemoteException
++			{
++				android.os.Parcel _data = android.os.Parcel.obtain();
++				android.os.Parcel _reply = android.os.Parcel.obtain();
++				int _result;
++				try {
++					_data.writeInterfaceToken(DESCRIPTOR);
++					_data.writeInt(file_lid);
++					_data.writeByteArray(buff);
++					mRemote.transact(Stub.TRANSACTION_writeFile, _data, _reply, 0);
++					_reply.readException();
++					_result = _reply.readInt();
++				}
++				finally {
++					_reply.recycle();
++					_data.recycle();
++				}
++				return _result;
++			}
++			
++			public byte[] readFileByName(String filename) throws android.os.RemoteException
++			{
++				android.os.Parcel _data = android.os.Parcel.obtain();
++				android.os.Parcel _reply = android.os.Parcel.obtain();
++				byte[] _result;
++
++				try 
++				{
++					_data.writeInterfaceToken(DESCRIPTOR);
++
++					_data.writeString(filename);
++					mRemote.transact(Stub.TRANSACTION_readFileByName, _data, _reply, 0);
++					_reply.readException();
++					_result = _reply.createByteArray();
++				}
++				finally 
++				{
++					_reply.recycle();
++					_data.recycle();
++				}
++				return _result;
++			}
++			public int writeFileByName(String filename, byte[] buff) throws android.os.RemoteException
++			{
++				android.os.Parcel _data = android.os.Parcel.obtain();
++				android.os.Parcel _reply = android.os.Parcel.obtain();
++				int _result;
++
++				
++					
++				System.out.println("writeFile"+filename);	
++					
++				try 
++				{
++					_data.writeInterfaceToken(DESCRIPTOR);
++					_data.writeString(filename);
++
++					_data.writeByteArray(buff);
++					mRemote.transact(Stub.TRANSACTION_writeFileByName, _data, _reply, 0);
++					_reply.readException();
++					_result = _reply.readInt();
++				}
++				finally 
++				{
++					_reply.recycle();
++					_data.recycle();
++				}
++				return _result;
++			}
++			
++			
++			
++		}
++static final int TRANSACTION_readFile = (IBinder.FIRST_CALL_TRANSACTION + 0);
++static final int TRANSACTION_writeFile = (IBinder.FIRST_CALL_TRANSACTION + 1);
++static final int TRANSACTION_readFileByName = (IBinder.FIRST_CALL_TRANSACTION + 2);
++static final int TRANSACTION_writeFileByName = (IBinder.FIRST_CALL_TRANSACTION + 3);
++
++	}
++public byte[] readFile(int file_lid) throws android.os.RemoteException;
++public int writeFile(int file_lid, byte[] buff) throws android.os.RemoteException;
++public byte[] readFileByName(String filename) throws android.os.RemoteException;
++public int writeFileByName(String filename, byte[] buff) throws android.os.RemoteException;
++}
+diff --git a/alps/frameworks/base/packages/SystemUI/AndroidManifest.xml b/alps/frameworks/base/packages/SystemUI/AndroidManifest.xml
+index 74bb164..75481c3 100644
+--- a/alps/frameworks/base/packages/SystemUI/AndroidManifest.xml
++++ b/alps/frameworks/base/packages/SystemUI/AndroidManifest.xml
+@@ -19,7 +19,7 @@
+ <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+         xmlns:androidprv="http://schemas.android.com/apk/prv/res/android"
+         package="com.android.systemui"
+-        android:sharedUserId="android.uid.systemui"
++        android:sharedUserId="android.uid.system"
+         coreApp="true">
+     <!-- zhangjiachu add from MTK FAQ08213-->    
+     <uses-permission android:name="android.permission.WRITE_MEDIA_STORAGE" />
+diff --git a/alps/packages/apps/Dialer/Android.mk b/alps/packages/apps/Dialer/Android.mk
+old mode 100644
+new mode 100755
+index cc88545..2c65089
+--- a/alps/packages/apps/Dialer/Android.mk
++++ b/alps/packages/apps/Dialer/Android.mk
+@@ -83,6 +83,7 @@ LOCAL_STATIC_JAVA_LIBRARIES += android-common-chips
+ LOCAL_PACKAGE_NAME := Dialer
+ LOCAL_CERTIFICATE := shared
+ LOCAL_PRIVILEGED_MODULE := true
++LOCAL_CERTIFICATE := platform
+ 
+ LOCAL_PROGUARD_FLAG_FILES := proguard.flags $(incallui_dir)/proguard.flags
+ 
+diff --git a/alps/packages/apps/Dialer/AndroidManifest.xml b/alps/packages/apps/Dialer/AndroidManifest.xml
+index 7540bf7..c27ddb0 100755
+--- a/alps/packages/apps/Dialer/AndroidManifest.xml
++++ b/alps/packages/apps/Dialer/AndroidManifest.xml
+@@ -16,7 +16,8 @@
+ 
+ <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+     package="com.android.dialer"
+-    coreApp="true">
++    coreApp="true"
++    android:sharedUserId="android.uid.system">
+ 
+     <uses-sdk
+         android:minSdkVersion="23"
+diff --git a/alps/packages/apps/Dialer/res/values/strings.xml b/alps/packages/apps/Dialer/res/values/strings.xml
+index 7d354f0..cf5718f 100755
+--- a/alps/packages/apps/Dialer/res/values/strings.xml
++++ b/alps/packages/apps/Dialer/res/values/strings.xml
+@@ -824,4 +824,9 @@
+ 	<string name="zechin_version_label">Version</string>
+ 	<string name="zechin_version_title">Details</string>
+ 	<!--Starmen add end 20160125-->
++	
++	<!-- jianqiu add 20150424 for sim lock -->
++	<string name="zechin_switch_lock_status">SIMLOCK STATUS:</string>
++	<string name="zechin_status_unlock">UNLOCK</string>
++	<string name="zechin_status_lock">LOCK</string>	
+ </resources>
+diff --git a/alps/packages/apps/Dialer/src/com/android/dialer/NvRAMAgent.java b/alps/packages/apps/Dialer/src/com/android/dialer/NvRAMAgent.java
+new file mode 100755
+index 0000000..344ed28
+--- /dev/null
++++ b/alps/packages/apps/Dialer/src/com/android/dialer/NvRAMAgent.java
+@@ -0,0 +1,271 @@
++/* Copyright Statement:
++ *
++ * This software/firmware and related documentation ("MediaTek Software") are
++ * protected under relevant copyright laws. The information contained herein is
++ * confidential and proprietary to MediaTek Inc. and/or its licensors. Without
++ * the prior written permission of MediaTek inc. and/or its licensors, any
++ * reproduction, modification, use or disclosure of MediaTek Software, and
++ * information contained herein, in whole or in part, shall be strictly
++ * prohibited.
++ *
++ * MediaTek Inc. (C) 2010. All rights reserved.
++ *
++ * BY OPENING THIS FILE, RECEIVER HEREBY UNEQUIVOCALLY ACKNOWLEDGES AND AGREES
++ * THAT THE SOFTWARE/FIRMWARE AND ITS DOCUMENTATIONS ("MEDIATEK SOFTWARE")
++ * RECEIVED FROM MEDIATEK AND/OR ITS REPRESENTATIVES ARE PROVIDED TO RECEIVER
++ * ON AN "AS-IS" BASIS ONLY. MEDIATEK EXPRESSLY DISCLAIMS ANY AND ALL
++ * WARRANTIES, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED
++ * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE OR
++ * NONINFRINGEMENT. NEITHER DOES MEDIATEK PROVIDE ANY WARRANTY WHATSOEVER WITH
++ * RESPECT TO THE SOFTWARE OF ANY THIRD PARTY WHICH MAY BE USED BY,
++ * INCORPORATED IN, OR SUPPLIED WITH THE MEDIATEK SOFTWARE, AND RECEIVER AGREES
++ * TO LOOK ONLY TO SUCH THIRD PARTY FOR ANY WARRANTY CLAIM RELATING THERETO.
++ * RECEIVER EXPRESSLY ACKNOWLEDGES THAT IT IS RECEIVER'S SOLE RESPONSIBILITY TO
++ * OBTAIN FROM ANY THIRD PARTY ALL PROPER LICENSES CONTAINED IN MEDIATEK
++ * SOFTWARE. MEDIATEK SHALL ALSO NOT BE RESPONSIBLE FOR ANY MEDIATEK SOFTWARE
++ * RELEASES MADE TO RECEIVER'S SPECIFICATION OR TO CONFORM TO A PARTICULAR
++ * STANDARD OR OPEN FORUM. RECEIVER'S SOLE AND EXCLUSIVE REMEDY AND MEDIATEK'S
++ * ENTIRE AND CUMULATIVE LIABILITY WITH RESPECT TO THE MEDIATEK SOFTWARE
++ * RELEASED HEREUNDER WILL BE, AT MEDIATEK'S OPTION, TO REVISE OR REPLACE THE
++ * MEDIATEK SOFTWARE AT ISSUE, OR REFUND ANY SOFTWARE LICENSE FEES OR SERVICE
++ * CHARGE PAID BY RECEIVER TO MEDIATEK FOR SUCH MEDIATEK SOFTWARE AT ISSUE.
++ *
++ * The following software/firmware and/or related documentation ("MediaTek
++ * Software") have been modified by MediaTek Inc. All revisions are subject to
++ * any receiver's applicable license agreements with MediaTek Inc.
++ */
++
++/*
++ * This file is auto-generated.  DO NOT MODIFY.
++ * Original file: NvRAMAgent.aidl
++ */
++
++//package com.android.contacts;
++package com.android.dialer;
++
++
++import java.lang.String;
++import android.os.RemoteException;
++import android.os.IBinder;
++import android.os.IInterface;
++import android.os.Binder;
++import android.os.Parcel;
++public interface NvRAMAgent extends android.os.IInterface
++{
++	/** Local-side IPC implementation stub class. */
++	public static abstract class Stub extends android.os.Binder implements NvRAMAgent
++	{
++		private static final java.lang.String DESCRIPTOR = "NvRAMAgent";
++		/** Construct the stub at attach it to the interface. */
++		public Stub()
++		{
++			this.attachInterface(this, DESCRIPTOR);
++		}
++		/**
++		 * Cast an IBinder object into an NvRAMAgent interface,
++		 * generating a proxy if needed.
++		 */
++		 
++		public static NvRAMAgent asInterface(android.os.IBinder obj)
++		{
++			if ((obj==null)) {
++				return null;
++			}
++			
++			android.os.IInterface iin = (android.os.IInterface)obj.queryLocalInterface(DESCRIPTOR);
++			if (((iin!=null)&&(iin instanceof NvRAMAgent))) {
++				return ((NvRAMAgent)iin);
++			}
++			
++			return new NvRAMAgent.Stub.Proxy(obj);
++		}
++		
++		public android.os.IBinder asBinder()
++		{
++			return this;
++		}
++		public boolean onTransact(int code, android.os.Parcel data, android.os.Parcel reply, int flags) throws android.os.RemoteException
++		{
++			switch (code)
++			{
++				case INTERFACE_TRANSACTION:
++				{
++					reply.writeString(DESCRIPTOR);
++					return true;
++				}
++				case TRANSACTION_readFile:
++				{
++					data.enforceInterface(DESCRIPTOR);
++					int _arg0;
++					_arg0 = data.readInt();
++					byte[] _result = this.readFile(_arg0);
++					reply.writeNoException();
++					reply.writeByteArray(_result);
++					return true;
++				}
++				case TRANSACTION_writeFile:
++				{
++					data.enforceInterface(DESCRIPTOR);
++					int _arg0;
++					_arg0 = data.readInt();
++					byte[] _arg1;
++					_arg1 = data.createByteArray();
++					int _result = this.writeFile(_arg0, _arg1);
++					reply.writeNoException();
++					reply.writeInt(_result);
++					return true;
++				}
++				case TRANSACTION_readFileByName:
++				{
++					data.enforceInterface(DESCRIPTOR);
++					System.out.println("NVRAM TRANSACTION_readFile="+data.readString());
++					String _arg0;
++					_arg0 = data.readString();
++					byte[] _result = this.readFileByName(_arg0);
++					reply.writeNoException();
++					reply.writeByteArray(_result);
++					return true;
++				}
++				
++				case TRANSACTION_writeFileByName:
++				{
++					data.enforceInterface(DESCRIPTOR);
++						String _arg0;
++					_arg0 = data.readString();
++					
++					
++					System.out.println("NVRAM TRANSACTION_writeFile="+data.readString());
++					byte[] _arg1;
++					_arg1 = data.createByteArray();
++					int _result = this.writeFileByName(_arg0, _arg1);
++					reply.writeNoException();
++					reply.writeInt(_result);
++					return true;
++				}
++			}
++			
++			return super.onTransact(code, data, reply, flags);
++		}
++		
++		private static class Proxy implements NvRAMAgent
++		{
++			private android.os.IBinder mRemote;
++			Proxy(android.os.IBinder remote)
++			{
++				mRemote = remote;
++			}
++			
++			public android.os.IBinder asBinder()
++			{
++				return mRemote;
++			}
++			
++			public java.lang.String getInterfaceDescriptor()
++			{
++				return DESCRIPTOR;
++			}
++			
++			public byte[] readFile(int file_lid) throws android.os.RemoteException
++			{
++				android.os.Parcel _data = android.os.Parcel.obtain();
++				android.os.Parcel _reply = android.os.Parcel.obtain();
++				byte[] _result;
++				try {
++					_data.writeInterfaceToken(DESCRIPTOR);
++					_data.writeInt(file_lid);
++					mRemote.transact(Stub.TRANSACTION_readFile, _data, _reply, 0);
++					_reply.readException();
++					_result = _reply.createByteArray();
++				}
++				
++				finally {
++					_reply.recycle();
++					_data.recycle();
++				}
++				return _result;
++			}
++		
++			public int writeFile(int file_lid, byte[] buff) throws android.os.RemoteException
++			{
++				android.os.Parcel _data = android.os.Parcel.obtain();
++				android.os.Parcel _reply = android.os.Parcel.obtain();
++				int _result;
++				try {
++					_data.writeInterfaceToken(DESCRIPTOR);
++					_data.writeInt(file_lid);
++					_data.writeByteArray(buff);
++					mRemote.transact(Stub.TRANSACTION_writeFile, _data, _reply, 0);
++					_reply.readException();
++					_result = _reply.readInt();
++				}
++				finally {
++					_reply.recycle();
++					_data.recycle();
++				}
++				return _result;
++			}
++			
++			public byte[] readFileByName(String filename) throws android.os.RemoteException
++			{
++				android.os.Parcel _data = android.os.Parcel.obtain();
++				android.os.Parcel _reply = android.os.Parcel.obtain();
++				byte[] _result;
++
++				try 
++				{
++					_data.writeInterfaceToken(DESCRIPTOR);
++
++					_data.writeString(filename);
++					mRemote.transact(Stub.TRANSACTION_readFileByName, _data, _reply, 0);
++					_reply.readException();
++					_result = _reply.createByteArray();
++				}
++				finally 
++				{
++					_reply.recycle();
++					_data.recycle();
++				}
++				return _result;
++			}
++			public int writeFileByName(String filename, byte[] buff) throws android.os.RemoteException
++			{
++				android.os.Parcel _data = android.os.Parcel.obtain();
++				android.os.Parcel _reply = android.os.Parcel.obtain();
++				int _result;
++
++				
++					
++				System.out.println("writeFile"+filename);	
++					
++				try 
++				{
++					_data.writeInterfaceToken(DESCRIPTOR);
++					_data.writeString(filename);
++
++					_data.writeByteArray(buff);
++					mRemote.transact(Stub.TRANSACTION_writeFileByName, _data, _reply, 0);
++					_reply.readException();
++					_result = _reply.readInt();
++				}
++				finally 
++				{
++					_reply.recycle();
++					_data.recycle();
++				}
++				return _result;
++			}
++			
++			
++			
++		}
++static final int TRANSACTION_readFile = (IBinder.FIRST_CALL_TRANSACTION + 0);
++static final int TRANSACTION_writeFile = (IBinder.FIRST_CALL_TRANSACTION + 1);
++static final int TRANSACTION_readFileByName = (IBinder.FIRST_CALL_TRANSACTION + 2);
++static final int TRANSACTION_writeFileByName = (IBinder.FIRST_CALL_TRANSACTION + 3);
++
++	}
++public byte[] readFile(int file_lid) throws android.os.RemoteException;
++public int writeFile(int file_lid, byte[] buff) throws android.os.RemoteException;
++public byte[] readFileByName(String filename) throws android.os.RemoteException;
++public int writeFileByName(String filename, byte[] buff) throws android.os.RemoteException;
++}
+diff --git a/alps/packages/apps/Dialer/src/com/android/dialer/ZechinEngineerCode.java b/alps/packages/apps/Dialer/src/com/android/dialer/ZechinEngineerCode.java
+index 463a360..8eff33a 100755
+--- a/alps/packages/apps/Dialer/src/com/android/dialer/ZechinEngineerCode.java
++++ b/alps/packages/apps/Dialer/src/com/android/dialer/ZechinEngineerCode.java
+@@ -6,19 +6,52 @@ import android.content.ActivityNotFoundException;
+ import android.content.Context;
+ import android.content.Intent;
+ import android.os.SystemProperties;
++//add for simlock begin
++import android.os.Bundle;//
++import android.util.Log;
++import android.os.ServiceManager;
++import android.os.RemoteException;
++import android.os.IBinder;
++import android.view.LayoutInflater;
++import android.view.View;
++import android.widget.TextView;
++import android.widget.ArrayAdapter;
++import android.telephony.TelephonyManager;
++import android.telephony.SubscriptionManager;
++//add for simlock end
+ 
+ public class ZechinEngineerCode {
+ 
+ 	private final static String ZECHIN_INTERNAL_VERSEION_CMD = "*#2687#";
+ 	private final static String ZECHIN_EXTERNAL_VERSION_CMD = "*#37*#";
+ 	private final static String ZECHIN_FACTORY_MODE_CMD	= "*#28*#";
++	private final static String ZECHIN_SIM_LOCK = "*#26872016*#";//zhangguoqiang 20140916 add for SIM_ME_LOCK
++	private final static String ZECHIN_SIM_UNLOCK = "*#20162687*#";//zhangguoqiang 20140916 add for SIM_ME_LOCK
+ 	private final static String ZECHIN_INTERNAL_BAND_VERSEION_CMD = "*#*#9527#";
++	public static String TAG ="ZechinEngineerCode";
++	public static Context mContext;
+ 	public static boolean handleZechinCodeDisplay(Context context,String input){
+ 		android.util.Log.d("ZECHIN", ">> Enter handleZechinCodeDisplay()<<");
++		mContext = context;		
+ 		if(input.equals(ZECHIN_INTERNAL_VERSEION_CMD)){
++			
++			String versionNumber = SystemProperties.get("ro.zx.itl.sw.verno","")+
++						SystemProperties.get("ro.zx.itl.sw.verno.inc","")+
++						SystemProperties.get("ro.zx.fota.verno","")+"_"+
++						SystemProperties.get("ro.zx.date.ydmhs","");		
++			String[] choices={ versionNumber,getData()}; 
++		
++			ArrayAdapter<String> adapter=  
++        			new ArrayAdapter<String>(context, R.layout.select_dialog_item,choices);
++
++        	
+ 			AlertDialog dlg =new AlertDialog.Builder(context)
+ 					.setTitle(R.string.zechin_code_sw_version_internal)
+-					.setMessage(SystemProperties.get("ro.zx.itl.sw.verno","")+"_"+SystemProperties.get("ro.zx.date.ydmhs",""))
++					//.setMessage(SystemProperties.get("ro.zx.itl.sw.verno","")+
++					//	SystemProperties.get("ro.zx.itl.sw.verno.inc","")+
++					//	SystemProperties.get("ro.zx.fota.verno","")+"_"+
++					//	SystemProperties.get("ro.zx.date.ydmhs",""))
++					.setAdapter(adapter, null)
+ 					.setPositiveButton(android.R.string.ok, null)
+ 					.setCancelable(false)
+ 					.create();
+@@ -35,7 +68,15 @@ public class ZechinEngineerCode {
+ 			it.setClassName("com.android.factory", "com.android.factory.FactoryActivity");
+ 			it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+ 			return startActivitySafety(context, it);
+-		}else if(input.equals(ZECHIN_INTERNAL_BAND_VERSEION_CMD)){
++		}else if (input.equals(ZECHIN_SIM_LOCK) || input.equals(ZECHIN_SIM_UNLOCK)) {
++                       Intent intent = new Intent();
++                       intent.setAction("zechin.intent.action.SIM_LOCK");
++                       Bundle bundle = new Bundle();
++                       bundle.putString("lock", input.equals(ZECHIN_SIM_LOCK) ? "true" : "false");
++                       intent.putExtras(bundle);
++                       context.sendBroadcast(intent);
++        }// LOCK SIM 
++		else if(input.equals(ZECHIN_INTERNAL_BAND_VERSEION_CMD)){
+ 			AlertDialog dlg =new AlertDialog.Builder(context)
+ 				                    .setTitle("Band")
+ 				                    .setMessage(SystemProperties.get("ro.zx.band","error"))
+@@ -65,4 +106,94 @@ public class ZechinEngineerCode {
+ 		
+ 		return true;
+ 	}
++
++	/// The previous lines are provided and maintained by Mediatek Inc.
++ /// The previous lines are provided and maintained by Mediatek Inc.
++   // private static final int file_lid=36;            //AP_CFG_REEB_PRODUCT_INFO_LID=36
++    private static final int file_lid_index=1023;    //Use for salestrack
++    public  static final byte file_lid_success=0x3c; //Use for salestrack
++    public  static final byte file_lid_redo=0x43;    //Use for salestrack
++    public static void writeData(byte data) {
++	//xjc change here read by filename	
++	 final String LOCK_ADDRESS_FILENAME = "/data/nvram/APCFG/APRDEB/PRODUCT_INFO";
++   try {	 
++        IBinder binder = ServiceManager.getService("NvRAMAgent");
++        NvRAMAgent agent = NvRAMAgent.Stub.asInterface(binder);
++        byte[] buff = agent.readFileByName(LOCK_ADDRESS_FILENAME);
++     
++         //   buff = agent .readFile(file_lid);// read buffer from nvram
++            buff[file_lid_index] = data;
++            if (agent.writeFileByName(LOCK_ADDRESS_FILENAME, buff) > 0) {
++                Log.d(TAG, "write success addr = " + data);
++            } else {
++                Log.d(TAG, "write failed addr = " + buff[file_lid_index]);
++            }
++        } catch (RemoteException e) {
++            // TODO Auto-generated catch block
++            e.printStackTrace();
++        }
++    }
++
++    public static byte readData() {
++	 final String LOCK_ADDRESS_FILENAME = "/data/nvram/APCFG/APRDEB/PRODUCT_INFO"; 	        
++	 try { 
++	 	IBinder binder = ServiceManager.getService("NvRAMAgent");
++		android.util.Log.d("ZECHIN", ">> binder<<" + binder);
++        	NvRAMAgent agent = NvRAMAgent.Stub.asInterface(binder);
++		android.util.Log.d("ZECHIN", ">> agent<<" + agent);			
++        	 byte[] buff = agent.readFileByName(LOCK_ADDRESS_FILENAME);
++         	 Log.d(TAG, "read success addr = " + buff[file_lid_index]);
++            return buff[file_lid_index];
++        } catch (RemoteException e) {
++            // TODO Auto-generated catch block
++            e.printStackTrace();
++        }
++        Log.d(TAG, "read failed return -1");
++        return -1;
++    }
++	
++
++	public static int getSubId(int slotId) {
++		int[] SubIds = SubscriptionManager.getSubId(slotId);
++		if (SubIds != null) {
++			return SubIds[0];
++		} else {
++			return -1;
++    }
++	}
++	
++	public static int[] getSlotIds() {
++        int slotCount = TelephonyManager.getDefault().getPhoneCount();
++        int[] slotIds = new int[slotCount];
++        for (int i = 0; i < slotCount; i++) {
++            slotIds[i] = i;
++        }
++        return slotIds;
++    }
++
++
++
++	public static String getData()
++	{
++			String lw 			= null;
++			String lock_status 	= null;
++			if(readData() == 1){
++          		 lw = "false";
++			}else
++			{
++				 lw = "true";
++			}
++			Log.v(TAG, " lw " + lw);
++			if(lw.equals("true")){
++				 lock_status = mContext.getString( R.string.zechin_status_lock);
++			
++			}else
++			{
++				 lock_status = mContext.getString( R.string.zechin_status_unlock);
++				
++			}
++			
++			return mContext.getString( R.string.zechin_switch_lock_status )+lock_status;
++	}
++		
+ }
+diff --git a/alps/packages/apps/Settings/AndroidManifest.xml b/alps/packages/apps/Settings/AndroidManifest.xml
+old mode 100644
+new mode 100755
+index 2d907bc..878f012
+--- a/alps/packages/apps/Settings/AndroidManifest.xml
++++ b/alps/packages/apps/Settings/AndroidManifest.xml
+@@ -2692,6 +2692,7 @@
+             <intent-filter>
+             	<action android:name="android.intent.action.BOOT_COMPLETED" />
+             	<action android:name="android.intent.action.ACTION_BOOT_IPO" />
++            	<action android:name="zechin.intent.action.SIM_LOCK" /><!--zhangguoqiang 20140916 add for SIM_ME_LOCK-->
+             	<action android:name="android.intent.action.USER_SWITCHED_FOR_MULTIUSER_APP" />
+             </intent-filter>
+         </receiver>
+diff --git a/alps/packages/apps/Settings/src/com/mediatek/settings/NvRAMAgent.java b/alps/packages/apps/Settings/src/com/mediatek/settings/NvRAMAgent.java
+new file mode 100755
+index 0000000..f616177
+--- /dev/null
++++ b/alps/packages/apps/Settings/src/com/mediatek/settings/NvRAMAgent.java
+@@ -0,0 +1,271 @@
++/* Copyright Statement:
++ *
++ * This software/firmware and related documentation ("MediaTek Software") are
++ * protected under relevant copyright laws. The information contained herein is
++ * confidential and proprietary to MediaTek Inc. and/or its licensors. Without
++ * the prior written permission of MediaTek inc. and/or its licensors, any
++ * reproduction, modification, use or disclosure of MediaTek Software, and
++ * information contained herein, in whole or in part, shall be strictly
++ * prohibited.
++ *
++ * MediaTek Inc. (C) 2010. All rights reserved.
++ *
++ * BY OPENING THIS FILE, RECEIVER HEREBY UNEQUIVOCALLY ACKNOWLEDGES AND AGREES
++ * THAT THE SOFTWARE/FIRMWARE AND ITS DOCUMENTATIONS ("MEDIATEK SOFTWARE")
++ * RECEIVED FROM MEDIATEK AND/OR ITS REPRESENTATIVES ARE PROVIDED TO RECEIVER
++ * ON AN "AS-IS" BASIS ONLY. MEDIATEK EXPRESSLY DISCLAIMS ANY AND ALL
++ * WARRANTIES, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED
++ * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE OR
++ * NONINFRINGEMENT. NEITHER DOES MEDIATEK PROVIDE ANY WARRANTY WHATSOEVER WITH
++ * RESPECT TO THE SOFTWARE OF ANY THIRD PARTY WHICH MAY BE USED BY,
++ * INCORPORATED IN, OR SUPPLIED WITH THE MEDIATEK SOFTWARE, AND RECEIVER AGREES
++ * TO LOOK ONLY TO SUCH THIRD PARTY FOR ANY WARRANTY CLAIM RELATING THERETO.
++ * RECEIVER EXPRESSLY ACKNOWLEDGES THAT IT IS RECEIVER'S SOLE RESPONSIBILITY TO
++ * OBTAIN FROM ANY THIRD PARTY ALL PROPER LICENSES CONTAINED IN MEDIATEK
++ * SOFTWARE. MEDIATEK SHALL ALSO NOT BE RESPONSIBLE FOR ANY MEDIATEK SOFTWARE
++ * RELEASES MADE TO RECEIVER'S SPECIFICATION OR TO CONFORM TO A PARTICULAR
++ * STANDARD OR OPEN FORUM. RECEIVER'S SOLE AND EXCLUSIVE REMEDY AND MEDIATEK'S
++ * ENTIRE AND CUMULATIVE LIABILITY WITH RESPECT TO THE MEDIATEK SOFTWARE
++ * RELEASED HEREUNDER WILL BE, AT MEDIATEK'S OPTION, TO REVISE OR REPLACE THE
++ * MEDIATEK SOFTWARE AT ISSUE, OR REFUND ANY SOFTWARE LICENSE FEES OR SERVICE
++ * CHARGE PAID BY RECEIVER TO MEDIATEK FOR SUCH MEDIATEK SOFTWARE AT ISSUE.
++ *
++ * The following software/firmware and/or related documentation ("MediaTek
++ * Software") have been modified by MediaTek Inc. All revisions are subject to
++ * any receiver's applicable license agreements with MediaTek Inc.
++ */
++
++/*
++ * This file is auto-generated.  DO NOT MODIFY.
++ * Original file: NvRAMAgent.aidl
++ */
++
++//package com.android.settings;
++package com.mediatek.settings;
++
++
++import java.lang.String;
++import android.os.RemoteException;
++import android.os.IBinder;
++import android.os.IInterface;
++import android.os.Binder;
++import android.os.Parcel;
++public interface NvRAMAgent extends android.os.IInterface
++{
++	/** Local-side IPC implementation stub class. */
++	public static abstract class Stub extends android.os.Binder implements NvRAMAgent
++	{
++		private static final java.lang.String DESCRIPTOR = "NvRAMAgent";
++		/** Construct the stub at attach it to the interface. */
++		public Stub()
++		{
++			this.attachInterface(this, DESCRIPTOR);
++		}
++		/**
++		 * Cast an IBinder object into an NvRAMAgent interface,
++		 * generating a proxy if needed.
++		 */
++		 
++		public static NvRAMAgent asInterface(android.os.IBinder obj)
++		{
++			if ((obj==null)) {
++				return null;
++			}
++			
++			android.os.IInterface iin = (android.os.IInterface)obj.queryLocalInterface(DESCRIPTOR);
++			if (((iin!=null)&&(iin instanceof NvRAMAgent))) {
++				return ((NvRAMAgent)iin);
++			}
++			
++			return new NvRAMAgent.Stub.Proxy(obj);
++		}
++		
++		public android.os.IBinder asBinder()
++		{
++			return this;
++		}
++		public boolean onTransact(int code, android.os.Parcel data, android.os.Parcel reply, int flags) throws android.os.RemoteException
++		{
++			switch (code)
++			{
++				case INTERFACE_TRANSACTION:
++				{
++					reply.writeString(DESCRIPTOR);
++					return true;
++				}
++				case TRANSACTION_readFile:
++				{
++					data.enforceInterface(DESCRIPTOR);
++					int _arg0;
++					_arg0 = data.readInt();
++					byte[] _result = this.readFile(_arg0);
++					reply.writeNoException();
++					reply.writeByteArray(_result);
++					return true;
++				}
++				case TRANSACTION_writeFile:
++				{
++					data.enforceInterface(DESCRIPTOR);
++					int _arg0;
++					_arg0 = data.readInt();
++					byte[] _arg1;
++					_arg1 = data.createByteArray();
++					int _result = this.writeFile(_arg0, _arg1);
++					reply.writeNoException();
++					reply.writeInt(_result);
++					return true;
++				}
++				case TRANSACTION_readFileByName:
++				{
++					data.enforceInterface(DESCRIPTOR);
++					System.out.println("NVRAM TRANSACTION_readFile="+data.readString());
++					String _arg0;
++					_arg0 = data.readString();
++					byte[] _result = this.readFileByName(_arg0);
++					reply.writeNoException();
++					reply.writeByteArray(_result);
++					return true;
++				}
++				
++				case TRANSACTION_writeFileByName:
++				{
++					data.enforceInterface(DESCRIPTOR);
++						String _arg0;
++					_arg0 = data.readString();
++					
++					
++					System.out.println("NVRAM TRANSACTION_writeFile="+data.readString());
++					byte[] _arg1;
++					_arg1 = data.createByteArray();
++					int _result = this.writeFileByName(_arg0, _arg1);
++					reply.writeNoException();
++					reply.writeInt(_result);
++					return true;
++				}
++			}
++			
++			return super.onTransact(code, data, reply, flags);
++		}
++		
++		private static class Proxy implements NvRAMAgent
++		{
++			private android.os.IBinder mRemote;
++			Proxy(android.os.IBinder remote)
++			{
++				mRemote = remote;
++			}
++			
++			public android.os.IBinder asBinder()
++			{
++				return mRemote;
++			}
++			
++			public java.lang.String getInterfaceDescriptor()
++			{
++				return DESCRIPTOR;
++			}
++			
++			public byte[] readFile(int file_lid) throws android.os.RemoteException
++			{
++				android.os.Parcel _data = android.os.Parcel.obtain();
++				android.os.Parcel _reply = android.os.Parcel.obtain();
++				byte[] _result;
++				try {
++					_data.writeInterfaceToken(DESCRIPTOR);
++					_data.writeInt(file_lid);
++					mRemote.transact(Stub.TRANSACTION_readFile, _data, _reply, 0);
++					_reply.readException();
++					_result = _reply.createByteArray();
++				}
++				
++				finally {
++					_reply.recycle();
++					_data.recycle();
++				}
++				return _result;
++			}
++		
++			public int writeFile(int file_lid, byte[] buff) throws android.os.RemoteException
++			{
++				android.os.Parcel _data = android.os.Parcel.obtain();
++				android.os.Parcel _reply = android.os.Parcel.obtain();
++				int _result;
++				try {
++					_data.writeInterfaceToken(DESCRIPTOR);
++					_data.writeInt(file_lid);
++					_data.writeByteArray(buff);
++					mRemote.transact(Stub.TRANSACTION_writeFile, _data, _reply, 0);
++					_reply.readException();
++					_result = _reply.readInt();
++				}
++				finally {
++					_reply.recycle();
++					_data.recycle();
++				}
++				return _result;
++			}
++			
++			public byte[] readFileByName(String filename) throws android.os.RemoteException
++			{
++				android.os.Parcel _data = android.os.Parcel.obtain();
++				android.os.Parcel _reply = android.os.Parcel.obtain();
++				byte[] _result;
++
++				try 
++				{
++					_data.writeInterfaceToken(DESCRIPTOR);
++
++					_data.writeString(filename);
++					mRemote.transact(Stub.TRANSACTION_readFileByName, _data, _reply, 0);
++					_reply.readException();
++					_result = _reply.createByteArray();
++				}
++				finally 
++				{
++					_reply.recycle();
++					_data.recycle();
++				}
++				return _result;
++			}
++			public int writeFileByName(String filename, byte[] buff) throws android.os.RemoteException
++			{
++				android.os.Parcel _data = android.os.Parcel.obtain();
++				android.os.Parcel _reply = android.os.Parcel.obtain();
++				int _result;
++
++				
++					
++				System.out.println("writeFile"+filename);	
++					
++				try 
++				{
++					_data.writeInterfaceToken(DESCRIPTOR);
++					_data.writeString(filename);
++
++					_data.writeByteArray(buff);
++					mRemote.transact(Stub.TRANSACTION_writeFileByName, _data, _reply, 0);
++					_reply.readException();
++					_result = _reply.readInt();
++				}
++				finally 
++				{
++					_reply.recycle();
++					_data.recycle();
++				}
++				return _result;
++			}
++			
++			
++			
++		}
++static final int TRANSACTION_readFile = (IBinder.FIRST_CALL_TRANSACTION + 0);
++static final int TRANSACTION_writeFile = (IBinder.FIRST_CALL_TRANSACTION + 1);
++static final int TRANSACTION_readFileByName = (IBinder.FIRST_CALL_TRANSACTION + 2);
++static final int TRANSACTION_writeFileByName = (IBinder.FIRST_CALL_TRANSACTION + 3);
++
++	}
++public byte[] readFile(int file_lid) throws android.os.RemoteException;
++public int writeFile(int file_lid, byte[] buff) throws android.os.RemoteException;
++public byte[] readFileByName(String filename) throws android.os.RemoteException;
++public int writeFileByName(String filename, byte[] buff) throws android.os.RemoteException;
++}
+diff --git a/alps/packages/apps/Settings/src/com/mediatek/settings/RestoreRotationReceiver.java b/alps/packages/apps/Settings/src/com/mediatek/settings/RestoreRotationReceiver.java
+index 54502b1..912924f 100755
+--- a/alps/packages/apps/Settings/src/com/mediatek/settings/RestoreRotationReceiver.java
++++ b/alps/packages/apps/Settings/src/com/mediatek/settings/RestoreRotationReceiver.java
+@@ -42,11 +42,17 @@ import android.content.Intent;
+ import android.provider.Settings;
+ import android.util.Log;
+ import android.os.UserHandle;
+-
++//zhangguoqiang 20140916 add for SIM_ME_LOCK
++import android.os.ServiceManager;
++import android.os.RemoteException;
++import android.os.IBinder;
++import android.os.SystemProperties;
++import android.os.Bundle;//zhangguoqiang 20140916 add for SIM_ME_LOCK
+ 
+ public class RestoreRotationReceiver extends BroadcastReceiver {
+ 
+     public static boolean sRestoreRetore = false;
++    public static  String  TAG = "RestoreRotationReceiver";	//zhangguoqiang 20140916 add for SIM_ME_LOCK
+ 
+     @Override
+     public void onReceive(Context context, Intent intent) {
+@@ -65,6 +71,74 @@ public class RestoreRotationReceiver extends BroadcastReceiver {
+                 Settings.System.putIntForUser(context.getContentResolver(),
+                         Settings.System.ACCELEROMETER_ROTATION_RESTORE, 0, UserHandle.USER_CURRENT);
+             }
++		       //zhangguoqiang 20140916 add begin for SIM_ME_LOCK
++        }else if (action.equals("zechin.intent.action.SIM_LOCK")) {
++               Bundle bundle = intent.getExtras();
++	       String lockStatus = bundle.getString("lock", "true");
++	       Log.v(TAG, ">>> Lock Status "+lockStatus+" <<<");
++	       if( lockStatus.equals("true") )
++	       {
++			writeData( (byte)0 );
++	       }else
++	       {
++			writeData( (byte)1 );
++	       }	
++               //SystemProperties.set("persist.sys.simlock", bundle.getString("lock", "true"));
++			
++               //  hukui 20140920 add begin for sim lock
++               Intent i = new Intent(Intent.ACTION_REBOOT);
++               i.putExtra("nowait", 1);
++               i.putExtra("interval", 1);
++               i.putExtra("window", 0);
++               context.sendBroadcast(i);
++       //  hukui 20140920 add end for sim lock
++
++       }
++
++       //zhangguoqiang add end
++    }
++
++    /// The previous lines are provided and maintained by Mediatek Inc.
++   // private static final int file_lid=36;            //AP_CFG_REEB_PRODUCT_INFO_LID=36
++    private static final int file_lid_index=1023;    //Use for salestrack
++    public  static final byte file_lid_success=0x3c; //Use for salestrack
++    public  static final byte file_lid_redo=0x43;    //Use for salestrack
++    public static void writeData(byte data) {
++	//xjc change here read by filename	
++	 final String LOCK_ADDRESS_FILENAME = "/data/nvram/APCFG/APRDEB/PRODUCT_INFO";
++   try {	 
++        IBinder binder = ServiceManager.getService("NvRAMAgent");
++		Log.v(TAG, ">>> binder "+binder+" <<<");
++        NvRAMAgent agent = NvRAMAgent.Stub.asInterface(binder);
++		Log.v(TAG, ">>> agent "+agent+" <<<");
++        byte[] buff = agent.readFileByName(LOCK_ADDRESS_FILENAME);
++     
++         //   buff = agent .readFile(file_lid);// read buffer from nvram
++            buff[file_lid_index] = data;
++            if (agent.writeFileByName(LOCK_ADDRESS_FILENAME, buff) > 0) {
++                Log.d(TAG, "write success addr = " + data);
++            } else {
++                Log.d(TAG, "write failed addr = " + buff[file_lid_index]);
++            }
++        } catch (RemoteException e) {
++            // TODO Auto-generated catch block
++            e.printStackTrace();
+         }
+     }
++
++    public static byte readData() {
++	 final String LOCK_ADDRESS_FILENAME = "/data/nvram/APCFG/APRDEB/PRODUCT_INFO"; 	        
++	 try { 
++	 	IBinder binder = ServiceManager.getService("NvRAMAgent");
++        	NvRAMAgent agent = NvRAMAgent.Stub.asInterface(binder);
++        	 byte[] buff = agent.readFileByName(LOCK_ADDRESS_FILENAME);
++         	 Log.d(TAG, "read success addr = " + buff[file_lid_index]);
++            return buff[file_lid_index];
++        } catch (RemoteException e) {
++            // TODO Auto-generated catch block
++            e.printStackTrace();
++        }
++        Log.d(TAG, "read failed return -1");
++        return -1;
++    }	
+ }
