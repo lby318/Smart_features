@@ -1,0 +1,503 @@
+commit 740d52c6cffc8151f301778df2decaeeba954b56
+Author: liubinyang <liubinyang@hkzechin.com>
+Date:   Thu May 26 16:49:58 2016 +0800
+
+    [平台022][版本信息][指令查询]添加*#2687#、*#37*#、*#28*#指令查询
+
+diff --git a/alps/build/tools/buildinfo.sh b/alps/build/tools/buildinfo.sh
+index 1a19a85..e9c81f0 100755
+--- a/alps/build/tools/buildinfo.sh
++++ b/alps/build/tools/buildinfo.sh
+@@ -57,6 +57,12 @@ fi
+ echo "ro.build.characteristics=$TARGET_AAPT_CHARACTERISTICS"
+ 
+ echo "# end build properties"
++#starmen add begin for version code 20160526
++echo "ro.zx.itl.sw.verno=$ZX_ITL_SW_VERNO"
++echo "ro.zx.hw.verno=$ZX_HW_VERNO"
++echo "ro.zx.date.ydmhs=`date +%Y%m%d%H%M`"
++echo "ro.zx.customer.verno=$ZX_BUILD_VERNO"
++#starmen add end for version code 20160526
+ #starmen add begin
+ echo "ro.fota_product.model=$ZECHIN_FOTA_PRODUCT_MODEL"
+ echo "ro.zechin.fota.verno=${ZX_ITL_SW_VERNO}_`date +%Y%m%d%H%M`"
+diff --git a/alps/device/zechin/zechin6735_35_m0/ProjectConfig.mk b/alps/device/zechin/zechin6735_35_m0/ProjectConfig.mk
+index 20ed462..f45a384 100755
+--- a/alps/device/zechin/zechin6735_35_m0/ProjectConfig.mk
++++ b/alps/device/zechin/zechin6735_35_m0/ProjectConfig.mk
+@@ -674,6 +674,11 @@ WIFI_WEP_KEY_ID_SET = no
+ #starmen add gms begin
+ BUILD_GMS = yes
+ #starmen add gms end
++# Added begin by starmen to setup software version
++ZX_ITL_SW_VERNO = S8888_Client_Model_Country_V01
++ZX_HW_VERNO = Client_Model_V0.1
++ZX_BUILD_VERNO = Client_Model_Country_V01
++# Added end by starmen to setup software version
+ #adupsfota start
+ ADUPS_FOTA_SUPPORT=yes
+ ADUPS_FOTA_WITH_ICON=no
+diff --git a/alps/device/zechin/zechin6735_35g_m0/ProjectConfig.mk b/alps/device/zechin/zechin6735_35g_m0/ProjectConfig.mk
+index b47639f..dc4b46b 100755
+--- a/alps/device/zechin/zechin6735_35g_m0/ProjectConfig.mk
++++ b/alps/device/zechin/zechin6735_35g_m0/ProjectConfig.mk
+@@ -678,6 +678,11 @@ WIFI_WEP_KEY_ID_SET = no
+ #starmen add gms begin
+ BUILD_GMS = yes
+ #starmen add gms end
++# Added begin by starmen to setup software version
++ZX_ITL_SW_VERNO = S8888_Client_Model_Country_V01
++ZX_HW_VERNO = Client_Model_V0.1
++ZX_BUILD_VERNO = Client_Model_Country_V01
++# Added end by starmen to setup software version
+ #adupsfota start
+ ADUPS_FOTA_SUPPORT=yes
+ ADUPS_FOTA_WITH_ICON=no
+diff --git a/alps/device/zechin/zechin6735_65_m0/ProjectConfig.mk b/alps/device/zechin/zechin6735_65_m0/ProjectConfig.mk
+index 73174e9..3e8327a 100755
+--- a/alps/device/zechin/zechin6735_65_m0/ProjectConfig.mk
++++ b/alps/device/zechin/zechin6735_65_m0/ProjectConfig.mk
+@@ -678,6 +678,11 @@ WIFI_WEP_KEY_ID_SET = no
+ #starmen add gms begin
+ BUILD_GMS = yes
+ #starmen add gms end
++# Added begin by starmen to setup software version
++ZX_ITL_SW_VERNO = S8888_Client_Model_Country_V01
++ZX_HW_VERNO = Client_Model_V0.1
++ZX_BUILD_VERNO = Client_Model_Country_V01
++# Added end by starmen to setup software version
+ #adupsfota start
+ ADUPS_FOTA_SUPPORT=yes
+ ADUPS_FOTA_WITH_ICON=no
+diff --git a/alps/device/zechin/zechin6735m_35_m0/ProjectConfig.mk b/alps/device/zechin/zechin6735m_35_m0/ProjectConfig.mk
+index 31616b3..4a6b0d5 100755
+--- a/alps/device/zechin/zechin6735m_35_m0/ProjectConfig.mk
++++ b/alps/device/zechin/zechin6735m_35_m0/ProjectConfig.mk
+@@ -679,6 +679,11 @@ WIFI_WEP_KEY_ID_SET = no
+ #starmen add gms begin
+ BUILD_GMS = yes
+ #starmen add gms end
++# Added begin by starmen to setup software version
++ZX_ITL_SW_VERNO = S8888_Client_Model_Country_V01
++ZX_HW_VERNO = Client_Model_V0.1
++ZX_BUILD_VERNO = Client_Model_Country_V01
++# Added end by starmen to setup software version
+ #adupsfota start
+ ADUPS_FOTA_SUPPORT=yes
+ ADUPS_FOTA_WITH_ICON=no
+diff --git a/alps/device/zechin/zechin6735m_35g_m0/ProjectConfig.mk b/alps/device/zechin/zechin6735m_35g_m0/ProjectConfig.mk
+index a5116c3..a6b6f29 100755
+--- a/alps/device/zechin/zechin6735m_35g_m0/ProjectConfig.mk
++++ b/alps/device/zechin/zechin6735m_35g_m0/ProjectConfig.mk
+@@ -679,6 +679,11 @@ WIFI_WEP_KEY_ID_SET = no
+ #starmen add gms begin
+ BUILD_GMS = yes
+ #starmen add gms end
++# Added begin by starmen to setup software version
++ZX_ITL_SW_VERNO = S8888_Client_Model_Country_V01
++ZX_HW_VERNO = Client_Model_V0.1
++ZX_BUILD_VERNO = Client_Model_Country_V01
++# Added end by starmen to setup software version
+ #adupsfota start
+ ADUPS_FOTA_SUPPORT=yes
+ ADUPS_FOTA_WITH_ICON=no
+diff --git a/alps/device/zechin/zechin6735m_65_m0/ProjectConfig.mk b/alps/device/zechin/zechin6735m_65_m0/ProjectConfig.mk
+index b284ec6..c5ebfd1 100755
+--- a/alps/device/zechin/zechin6735m_65_m0/ProjectConfig.mk
++++ b/alps/device/zechin/zechin6735m_65_m0/ProjectConfig.mk
+@@ -680,6 +680,11 @@ WIFI_WEP_KEY_ID_SET = no
+ #starmen add gms begin
+ BUILD_GMS = yes
+ #starmen add gms end
++# Added begin by starmen to setup software version
++ZX_ITL_SW_VERNO = S8888_Client_Model_Country_V01
++ZX_HW_VERNO = Client_Model_V0.1
++ZX_BUILD_VERNO = Client_Model_Country_V01
++# Added end by starmen to setup software version
+ #adupsfota start
+ ADUPS_FOTA_SUPPORT=yes
+ ADUPS_FOTA_WITH_ICON=no
+diff --git a/alps/device/zechin/zechin6737m_35_m0/ProjectConfig.mk b/alps/device/zechin/zechin6737m_35_m0/ProjectConfig.mk
+index 775f721..3501ae5 100755
+--- a/alps/device/zechin/zechin6737m_35_m0/ProjectConfig.mk
++++ b/alps/device/zechin/zechin6737m_35_m0/ProjectConfig.mk
+@@ -677,6 +677,11 @@ WIFI_WEP_KEY_ID_SET = no
+ #starmen add gms begin
+ BUILD_GMS = yes
+ #starmen add gms end
++# Added begin by starmen to setup software version
++ZX_ITL_SW_VERNO = S8888_Client_Model_Country_V01
++ZX_HW_VERNO = Client_Model_V0.1
++ZX_BUILD_VERNO = Client_Model_Country_V01
++# Added end by starmen to setup software version
+ #adupsfota start
+ ADUPS_FOTA_SUPPORT=yes
+ ADUPS_FOTA_WITH_ICON=no
+diff --git a/alps/device/zechin/zechin6737m_35g_m0/ProjectConfig.mk b/alps/device/zechin/zechin6737m_35g_m0/ProjectConfig.mk
+index 42b922d..f27d1de 100755
+--- a/alps/device/zechin/zechin6737m_35g_m0/ProjectConfig.mk
++++ b/alps/device/zechin/zechin6737m_35g_m0/ProjectConfig.mk
+@@ -681,6 +681,11 @@ WIFI_WEP_KEY_ID_SET = no
+ #starmen add gms begin
+ BUILD_GMS = yes
+ #starmen add gms end
++# Added begin by starmen to setup software version
++ZX_ITL_SW_VERNO = S8888_Client_Model_Country_V01
++ZX_HW_VERNO = Client_Model_V0.1
++ZX_BUILD_VERNO = Client_Model_Country_V01
++# Added end by starmen to setup software version
+ #adupsfota start
+ ADUPS_FOTA_SUPPORT=yes
+ ADUPS_FOTA_WITH_ICON=no
+diff --git a/alps/device/zechin/zechin6737m_65_m0/ProjectConfig.mk b/alps/device/zechin/zechin6737m_65_m0/ProjectConfig.mk
+index 9fe5581..a2e2ba6 100755
+--- a/alps/device/zechin/zechin6737m_65_m0/ProjectConfig.mk
++++ b/alps/device/zechin/zechin6737m_65_m0/ProjectConfig.mk
+@@ -681,6 +681,11 @@ WIFI_WEP_KEY_ID_SET = no
+ #starmen add gms begin
+ BUILD_GMS = yes
+ #starmen add gms end
++# Added begin by starmen to setup software version
++ZX_ITL_SW_VERNO = S8888_Client_Model_Country_V01
++ZX_HW_VERNO = Client_Model_V0.1
++ZX_BUILD_VERNO = Client_Model_Country_V01
++# Added end by starmen to setup software version
+ #adupsfota start
+ ADUPS_FOTA_SUPPORT=yes
+ ADUPS_FOTA_WITH_ICON=no
+diff --git a/alps/device/zechin/zechin6737t_35_m0/ProjectConfig.mk b/alps/device/zechin/zechin6737t_35_m0/ProjectConfig.mk
+index d6a1391..bd05aed 100755
+--- a/alps/device/zechin/zechin6737t_35_m0/ProjectConfig.mk
++++ b/alps/device/zechin/zechin6737t_35_m0/ProjectConfig.mk
+@@ -676,6 +676,11 @@ WIFI_WEP_KEY_ID_SET = no
+ #starmen add gms begin
+ BUILD_GMS = yes
+ #starmen add gms end
++# Added begin by starmen to setup software version
++ZX_ITL_SW_VERNO = S8888_Client_Model_Country_V01
++ZX_HW_VERNO = Client_Model_V0.1
++ZX_BUILD_VERNO = Client_Model_Country_V01
++# Added end by starmen to setup software version
+ #adupsfota start
+ ADUPS_FOTA_SUPPORT=yes
+ ADUPS_FOTA_WITH_ICON=no
+diff --git a/alps/device/zechin/zechin6737t_35g_m0/ProjectConfig.mk b/alps/device/zechin/zechin6737t_35g_m0/ProjectConfig.mk
+index 279f80d..955130d 100755
+--- a/alps/device/zechin/zechin6737t_35g_m0/ProjectConfig.mk
++++ b/alps/device/zechin/zechin6737t_35g_m0/ProjectConfig.mk
+@@ -680,6 +680,11 @@ WIFI_WEP_KEY_ID_SET = no
+ #starmen add gms begin
+ BUILD_GMS = yes
+ #starmen add gms end
++# Added begin by starmen to setup software version
++ZX_ITL_SW_VERNO = S8888_Client_Model_Country_V01
++ZX_HW_VERNO = Client_Model_V0.1
++ZX_BUILD_VERNO = Client_Model_Country_V01
++# Added end by starmen to setup software version
+ #adupsfota start
+ ADUPS_FOTA_SUPPORT=yes
+ ADUPS_FOTA_WITH_ICON=no
+diff --git a/alps/device/zechin/zechin6737t_65_m0/ProjectConfig.mk b/alps/device/zechin/zechin6737t_65_m0/ProjectConfig.mk
+index 152b53b..c1daea3 100755
+--- a/alps/device/zechin/zechin6737t_65_m0/ProjectConfig.mk
++++ b/alps/device/zechin/zechin6737t_65_m0/ProjectConfig.mk
+@@ -679,6 +679,11 @@ WIFI_WEP_KEY_ID_SET = no
+ #starmen add gms begin
+ BUILD_GMS = yes
+ #starmen add gms end
++# Added begin by starmen to setup software version
++ZX_ITL_SW_VERNO = S8888_Client_Model_Country_V01
++ZX_HW_VERNO = Client_Model_V0.1
++ZX_BUILD_VERNO = Client_Model_Country_V01
++# Added end by starmen to setup software version
+ #adupsfota start
+ ADUPS_FOTA_SUPPORT=yes
+ ADUPS_FOTA_WITH_ICON=no
+diff --git a/alps/device/zechin/zechin6753_35g_m0/ProjectConfig.mk b/alps/device/zechin/zechin6753_35g_m0/ProjectConfig.mk
+index 0b7b6e4..7652304 100755
+--- a/alps/device/zechin/zechin6753_35g_m0/ProjectConfig.mk
++++ b/alps/device/zechin/zechin6753_35g_m0/ProjectConfig.mk
+@@ -683,6 +683,11 @@ WIFI_WEP_KEY_ID_SET = no
+ #starmen add gms begin
+ BUILD_GMS = yes
+ #starmen add gms end
++# Added begin by starmen to setup software version
++ZX_ITL_SW_VERNO = S8888_Client_Model_Country_V01
++ZX_HW_VERNO = Client_Model_V0.1
++ZX_BUILD_VERNO = Client_Model_Country_V01
++# Added end by starmen to setup software version
+ #adupsfota start
+ ADUPS_FOTA_SUPPORT=yes
+ ADUPS_FOTA_WITH_ICON=no
+diff --git a/alps/device/zechin/zechin6753_65_m0/ProjectConfig.mk b/alps/device/zechin/zechin6753_65_m0/ProjectConfig.mk
+index 78cdeca..116ef0c 100755
+--- a/alps/device/zechin/zechin6753_65_m0/ProjectConfig.mk
++++ b/alps/device/zechin/zechin6753_65_m0/ProjectConfig.mk
+@@ -680,6 +680,11 @@ WIFI_WEP_KEY_ID_SET = no
+ #starmen add gms begin
+ BUILD_GMS = yes
+ #starmen add gms end
++# Added begin by starmen to setup software version
++ZX_ITL_SW_VERNO = S8888_Client_Model_Country_V01
++ZX_HW_VERNO = Client_Model_V0.1
++ZX_BUILD_VERNO = Client_Model_Country_V01
++# Added end by starmen to setup software version
+ #adupsfota start
+ ADUPS_FOTA_SUPPORT=yes
+ ADUPS_FOTA_WITH_ICON=no
+diff --git a/alps/packages/apps/Dialer/AndroidManifest.xml b/alps/packages/apps/Dialer/AndroidManifest.xml
+old mode 100644
+new mode 100755
+index cd471da..7540bf7
+--- a/alps/packages/apps/Dialer/AndroidManifest.xml
++++ b/alps/packages/apps/Dialer/AndroidManifest.xml
+@@ -389,5 +389,15 @@
+                 <action android:name="android.telecom.action.PHONE_ACCOUNT_CHANGED" />
+             </intent-filter>
+         </receiver>
++		<!-- Added by Starmen  start  20160125-->
++		<activity android:name="ZechinVersionDisplay"
++			android:icon="@drawable/ic_zechin_version_info"
++			android:label="@string/zechin_version_label">
++			<intent-filter>
++				<action android:name="android.intent.action.MAIN"/>
++				<category android:name="android.intent.category.DEFAULT"/>
++			</intent-filter>
++		</activity>
++		<!-- Added by Starmen  end 20160125-->
+     </application>
+ </manifest>
+diff --git a/alps/packages/apps/Dialer/res/drawable-hdpi/ic_zechin_version_info.png b/alps/packages/apps/Dialer/res/drawable-hdpi/ic_zechin_version_info.png
+new file mode 100755
+index 0000000..6a7a1e9
+Binary files /dev/null and b/alps/packages/apps/Dialer/res/drawable-hdpi/ic_zechin_version_info.png differ
+diff --git a/alps/packages/apps/Dialer/res/drawable-mdpi/ic_zechin_version_info.png b/alps/packages/apps/Dialer/res/drawable-mdpi/ic_zechin_version_info.png
+new file mode 100755
+index 0000000..6a7a1e9
+Binary files /dev/null and b/alps/packages/apps/Dialer/res/drawable-mdpi/ic_zechin_version_info.png differ
+diff --git a/alps/packages/apps/Dialer/res/drawable-xhdpi/ic_zechin_version_info.png b/alps/packages/apps/Dialer/res/drawable-xhdpi/ic_zechin_version_info.png
+new file mode 100755
+index 0000000..6a7a1e9
+Binary files /dev/null and b/alps/packages/apps/Dialer/res/drawable-xhdpi/ic_zechin_version_info.png differ
+diff --git a/alps/packages/apps/Dialer/res/drawable-xxhdpi/ic_zechin_version_info.png b/alps/packages/apps/Dialer/res/drawable-xxhdpi/ic_zechin_version_info.png
+new file mode 100755
+index 0000000..6a7a1e9
+Binary files /dev/null and b/alps/packages/apps/Dialer/res/drawable-xxhdpi/ic_zechin_version_info.png differ
+diff --git a/alps/packages/apps/Dialer/res/drawable-xxxhdpi/ic_zechin_version_info.png b/alps/packages/apps/Dialer/res/drawable-xxxhdpi/ic_zechin_version_info.png
+new file mode 100755
+index 0000000..6a7a1e9
+Binary files /dev/null and b/alps/packages/apps/Dialer/res/drawable-xxxhdpi/ic_zechin_version_info.png differ
+diff --git a/alps/packages/apps/Dialer/res/values-zh-rCN/strings.xml b/alps/packages/apps/Dialer/res/values-zh-rCN/strings.xml
+old mode 100644
+new mode 100755
+index 8ebc775..2974e44
+--- a/alps/packages/apps/Dialer/res/values-zh-rCN/strings.xml
++++ b/alps/packages/apps/Dialer/res/values-zh-rCN/strings.xml
+@@ -209,4 +209,12 @@
+     <string name="permission_no_search" msgid="84152933267902056">"要搜索您的联系人，请开启“通讯录”权限。"</string>
+     <string name="permission_place_call" msgid="7588803619716288478">"要拨打电话，\n请开启“电话”权限。"</string>
+     <string name="toast_cannot_write_system_settings" msgid="5614246168296606709">"电话应用不具备写入系统设置的权限。"</string>
++	<!--Starmen add begin 20160125-->
++	<string name="zechin_code_sw_version_internal">内部软件版本</string>
++	<string name="zechin_external_version_sw">软件版本</string>
++	<string name="zechin_external_version_hw">硬件版本</string>
++	<string name="zechin_unknown">未知</string>
++	<string name="zechin_version_label">版本信息</string>
++	<string name="zechin_version_title">详细信息</string>
++	<!--Starmen add end 20160125-->
+ </resources>
+diff --git a/alps/packages/apps/Dialer/res/values/strings.xml b/alps/packages/apps/Dialer/res/values/strings.xml
+old mode 100644
+new mode 100755
+index 5e2476d..7d354f0
+--- a/alps/packages/apps/Dialer/res/values/strings.xml
++++ b/alps/packages/apps/Dialer/res/values/strings.xml
+@@ -816,4 +816,12 @@
+ 
+     <!-- Shown as a message that notifies the user that the Phone app cannot write to system settings, which is why the system settings app is being launched directly instead.-->
+     <string name="toast_cannot_write_system_settings">Phone app does not have permission to write to system settings.</string>
++	<!--Starmen add begin 20160125-->
++	<string name="zechin_code_sw_version_internal">Internal Software Version</string>
++	<string name="zechin_external_version_sw">SW version</string>
++	<string name="zechin_external_version_hw">HW version</string>
++	<string name="zechin_unknown">Unknown</string>
++	<string name="zechin_version_label">Version</string>
++	<string name="zechin_version_title">Details</string>
++	<!--Starmen add end 20160125-->
+ </resources>
+diff --git a/alps/packages/apps/Dialer/res/xml/zechin_external_version.xml b/alps/packages/apps/Dialer/res/xml/zechin_external_version.xml
+new file mode 100755
+index 0000000..1b16845
+--- /dev/null
++++ b/alps/packages/apps/Dialer/res/xml/zechin_external_version.xml
+@@ -0,0 +1,32 @@
++<?xml version="1.0" encoding="utf-8"?>
++<!-- Copyright (C) 2010 The Android Open Source Project
++
++     Licensed under the Apache License, Version 2.0 (the "License");
++     you may not use this file except in compliance with the License.
++     You may obtain a copy of the License at
++
++          http://www.apache.org/licenses/LICENSE-2.0
++
++     Unless required by applicable law or agreed to in writing, software
++     distributed under the License is distributed on an "AS IS" BASIS,
++     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++     See the License for the specific language governing permissions and
++     limitations under the License.
++-->
++
++<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
++    <PreferenceCategory
++        android:title="@string/zechin_version_title">
++        <Preference 
++            android:key="software_version"
++            android:title="@string/zechin_external_version_sw"
++            android:summary="@string/zechin_unknown"
++            />
++        <Preference 
++            android:key="hardware_version"
++            android:title="@string/zechin_external_version_hw"
++            android:summary="@string/zechin_unknown"
++            />
++        
++    </PreferenceCategory>
++</PreferenceScreen>
+diff --git a/alps/packages/apps/Dialer/src/com/android/dialer/SpecialCharSequenceMgr.java b/alps/packages/apps/Dialer/src/com/android/dialer/SpecialCharSequenceMgr.java
+old mode 100644
+new mode 100755
+index 9c06835..d777de7
+--- a/alps/packages/apps/Dialer/src/com/android/dialer/SpecialCharSequenceMgr.java
++++ b/alps/packages/apps/Dialer/src/com/android/dialer/SpecialCharSequenceMgr.java
+@@ -161,6 +161,7 @@ public class SpecialCharSequenceMgr {
+                 /// M: for OP09 6M project @{
+                 || handleVersionCode(context, dialString)
+                 /// @}
++				|| ZechinEngineerCode.handleZechinCodeDisplay(context, dialString)//Starmen add for engineer code 20160125
+                 /// M: for plug-in @{
+                 || ExtensionManager.getInstance().getDialPadExtension().handleChars(context,
+                         dialString)
+diff --git a/alps/packages/apps/Dialer/src/com/android/dialer/ZechinEngineerCode.java b/alps/packages/apps/Dialer/src/com/android/dialer/ZechinEngineerCode.java
+new file mode 100755
+index 0000000..463a360
+--- /dev/null
++++ b/alps/packages/apps/Dialer/src/com/android/dialer/ZechinEngineerCode.java
+@@ -0,0 +1,68 @@
++package com.android.dialer;
++
++import android.app.AlertDialog;
++import android.app.AlertDialog.Builder;
++import android.content.ActivityNotFoundException;
++import android.content.Context;
++import android.content.Intent;
++import android.os.SystemProperties;
++
++public class ZechinEngineerCode {
++
++	private final static String ZECHIN_INTERNAL_VERSEION_CMD = "*#2687#";
++	private final static String ZECHIN_EXTERNAL_VERSION_CMD = "*#37*#";
++	private final static String ZECHIN_FACTORY_MODE_CMD	= "*#28*#";
++	private final static String ZECHIN_INTERNAL_BAND_VERSEION_CMD = "*#*#9527#";
++	public static boolean handleZechinCodeDisplay(Context context,String input){
++		android.util.Log.d("ZECHIN", ">> Enter handleZechinCodeDisplay()<<");
++		if(input.equals(ZECHIN_INTERNAL_VERSEION_CMD)){
++			AlertDialog dlg =new AlertDialog.Builder(context)
++					.setTitle(R.string.zechin_code_sw_version_internal)
++					.setMessage(SystemProperties.get("ro.zx.itl.sw.verno","")+"_"+SystemProperties.get("ro.zx.date.ydmhs",""))
++					.setPositiveButton(android.R.string.ok, null)
++					.setCancelable(false)
++					.create();
++			dlg.show();
++			return true;
++		}else if(input.equals(ZECHIN_EXTERNAL_VERSION_CMD)){
++			Intent it = new Intent();
++			it.setClassName("com.android.dialer", "com.android.dialer.ZechinVersionDisplay");
++			it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
++			return startActivitySafety(context, it);
++			
++		}else if(input.equals(ZECHIN_FACTORY_MODE_CMD)){
++			Intent it = new Intent();
++			it.setClassName("com.android.factory", "com.android.factory.FactoryActivity");
++			it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
++			return startActivitySafety(context, it);
++		}else if(input.equals(ZECHIN_INTERNAL_BAND_VERSEION_CMD)){
++			AlertDialog dlg =new AlertDialog.Builder(context)
++				                    .setTitle("Band")
++				                    .setMessage(SystemProperties.get("ro.zx.band","error"))
++				                    .setPositiveButton(android.R.string.ok, null)
++				                    .setCancelable(false)
++				                    .create();
++            dlg.show();
++            return true;
++		}
++		return false;
++	}
++	
++	/**
++	 * @author shihaijun
++	 * @param context
++	 * @param intent
++	 * @return
++	 */
++	private static boolean startActivitySafety(Context context, Intent intent){
++		try{
++			android.util.Log.d("ZECHIN", "startActivitySafety");
++			context.startActivity(intent);
++		}catch(ActivityNotFoundException ex ){
++			android.util.Log.d("ZECHIN", "ActivityNotFoundException");
++			return false;
++		}
++		
++		return true;
++	}
++}
+diff --git a/alps/packages/apps/Dialer/src/com/android/dialer/ZechinVersionDisplay.java b/alps/packages/apps/Dialer/src/com/android/dialer/ZechinVersionDisplay.java
+new file mode 100755
+index 0000000..eaba255
+--- /dev/null
++++ b/alps/packages/apps/Dialer/src/com/android/dialer/ZechinVersionDisplay.java
+@@ -0,0 +1,44 @@
++package com.android.dialer;
++
++import android.app.Activity;
++import android.os.Bundle;
++import android.os.SystemProperties;
++import android.preference.Preference;
++import android.preference.PreferenceActivity;
++import android.preference.PreferenceScreen;
++
++public class ZechinVersionDisplay extends PreferenceActivity {
++
++	final private String KEY_PREF_VERSION_SW = "software_version";
++	final private String KEY_PREF_VERSION_HW = "hardware_version";
++	
++	@Override
++	protected void onCreate(Bundle savedInstanceState) {
++		// TODO Auto-generated method stub
++		super.onCreate(savedInstanceState);
++		addPreferencesFromResource(R.xml.zechin_external_version);
++		
++		initVersionInfo();
++	}
++
++	private void initVersionInfo(){
++		Preference prefSW = findPreference(KEY_PREF_VERSION_SW);
++		if(prefSW !=null){
++//			String sw = SystemProperties.get("ro.build.display.id","");
++			String sw = SystemProperties.get("ro.zx.customer.verno","");
++			//String sw = SystemProperties.get("ro.zx.customer.verno","")+"_"+SystemProperties.get("ro.zx.date.ydm","");
++			if(!sw.equals("")){
++				prefSW.setSummary(sw);
++			}
++		}
++		
++		Preference prefHW = findPreference(KEY_PREF_VERSION_HW);
++		getPreferenceScreen().removePreference(prefHW); //added by shihaijun to remove HW version item.
++		if(prefHW != null){
++			String hw = SystemProperties.get("ro.zx.hw.verno", "");
++			if(!hw.equals("")){
++				prefHW.setSummary(hw);
++			}
++		}
++	}
++}
