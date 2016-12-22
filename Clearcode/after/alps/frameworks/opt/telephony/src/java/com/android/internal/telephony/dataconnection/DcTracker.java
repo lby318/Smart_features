@@ -3788,6 +3788,7 @@ public final class DcTracker extends DcTrackerBase implements IratController.OnI
                 log("EVENT_RESET_PDP_DONE cid=" + msg.arg1);
                 break;
 
+			/*
             case DctConstants.EVENT_REMOVE_RESTRICT_EUTRAN:
                 if (isCctSmRetry() && !(mPhone.mCi.isGettingAvailableNetworks())) {
                     log("EVENT_REMOVE_RESTRICT_EUTRAN");
@@ -3795,7 +3796,22 @@ public final class DcTracker extends DcTrackerBase implements IratController.OnI
                     setupDataOnConnectableApns(Phone.REASON_PS_RESTRICT_DISABLED);
                 }
                 break;
-
+	   */
+	   //modify by mtk ALPS02303441
+	   case DctConstants.EVENT_REMOVE_RESTRICT_EUTRAN:
+		if(isCctSmRetry() && !(mPhone.mCi.isGettingAvailableNetworks())){
+		   int curNetworkMode= Settings.Global.getInt(mPhone.getContext().getContentResolver(),
+		   Settings.Global.PREFERRED_NETWORK_MODE + mPhone.getSubId(), Phone.PREFERRED_NT_MODE);
+		   // if preferred network type is not support LTE now,
+		   // need use ECODE33 to trigger re-setup data call.
+		   if (curNetworkMode < RILConstants.NETWORK_MODE_LTE_CDMA_EVDO) {
+			log("EVENT_REMOVE_RESTRICT_EUTRAN");
+			mReregisterOnReconnectFailure = false;
+			setupDataOnConnectableApns(Phone.REASON_PS_RESTRICT_DISABLED);
+		   }
+		}
+		break;
+	    //modify by mtk ALPS02303441 end
             // M: [LTE][Low Power][UL traffic shaping] Start
             case DctConstants.EVENT_LTE_ACCESS_STRATUM_STATE:
                 ar = (AsyncResult)msg.obj;
