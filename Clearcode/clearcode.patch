@@ -1,0 +1,1257 @@
+commit 19593029d988a9a28642f7984c339e3fb456e80b
+Author: liubinyang <liubinyang@hkzechin.com>
+Date:   Sat May 7 16:20:54 2016 +0800
+
+    [Azumi][Clearcode][PRI-293/302]增加Telcel clearcode需求
+
+diff --git a/alps/device/zechin/zechin6580_we_m/ProjectConfig.mk b/alps/device/zechin/zechin6580_we_m/ProjectConfig.mk
+index 251f987..5e11479 100755
+--- a/alps/device/zechin/zechin6580_we_m/ProjectConfig.mk
++++ b/alps/device/zechin/zechin6580_we_m/ProjectConfig.mk
+@@ -225,7 +225,7 @@ MTK_CAM_VSS_SUPPORT = yes
+ MTK_CAM_ZSDHDR_SUPPORT = no
+ MTK_CAM_ZSDMFB_SUPPORT = no
+ MTK_CAM_ZSD_SUPPORT = yes
+-MTK_CC33_SUPPORT = no
++MTK_CC33_SUPPORT = yes
+ MTK_CDS_EM_SUPPORT = yes
+ MTK_CHARM_SUPPORT = no
+ MTK_CHIPTEST_INT = no
+@@ -582,7 +582,7 @@ MTK_SMS_TURKISH_TABLE_ALWAYS_SUPPORT = yes
+ MTK_SMT_SUPPORT = no
+ MTK_SPEAKER_MONITOR_SUPPORT = no
+ MTK_SPECIAL_FACTORY_RESET = no
+-MTK_SPECIFIC_SM_CAUSE = no
++MTK_SPECIFIC_SM_CAUSE = yes
+ MTK_SPI_NAND_SUPPORT = no
+ MTK_STREAMING_VIDEO_SUPPORT = no
+ MTK_SUBTITLE_SUPPORT = no
+diff --git a/alps/frameworks/base/telecomm/java/android/telecom/DisconnectCause.java b/alps/frameworks/base/telecomm/java/android/telecom/DisconnectCause.java
+old mode 100644
+new mode 100755
+index af5f341..2556491
+--- a/alps/frameworks/base/telecomm/java/android/telecom/DisconnectCause.java
++++ b/alps/frameworks/base/telecomm/java/android/telecom/DisconnectCause.java
+@@ -64,12 +64,207 @@ public final class DisconnectCause implements Parcelable {
+      */
+     public static final int CONNECTION_MANAGER_NOT_SUPPORTED = 10;
+ 
+-    ///M: WFC @{
++    //@darren 20151012 add for common clearcode
++   /**
++     * @hide
++     */
++    public static final int UNOBTAINABLE_NUMBER = 11;
++   /**
++     * @hide
++     */
++    public static final int CONGESTION = 12;
++   /**
++     * @hide
++     */
++    public static final int LIMIT_EXCEEDED = 13;
++   /**
++     * @hide
++     */
++    public static final int NO_USER_RESPONDING = 14;
++   /**
++     * @hide
++     */
++    public static final int USER_ALERTING_NO_ANSWER = 15;
++   /**
++     * @hide
++     */
++    public static final int NO_ROUTE_TO_DESTINATION = 16;
++   /**
++     * @hide
++     */
++    public static final int NORMAL_CLEARING = 17;
++   /**
++     * @hide
++     */
++    public static final int CALL_REJECTED = 18;
++   /**
++     * @hide
++     */
++    public static final int NUMBER_CHANGED = 19;
++   /**
++     * @hide
++     */
++    public static final int INVALID_NUMBER_FORMAT = 20;
++   /**
++     * @hide
++     */
++    public static final int FACILITY_REJECTED = 21;
++   /**
++     * @hide
++     */
++    public static final int STATUS_ENQUIRY = 22;
++   /**
++     * @hide
++     */
++    public static final int NORMAL_UNSPECIFIED = 23;
++   /**
++     * @hide
++     */
++    public static final int NO_CIRCUIT_AVAIL = 24;
++   /**
++     * @hide
++     */
++    public static final int NETWORK_OUT_OF_ORDER = 25;
++   /**
++     * @hide
++     */
++    public static final int SWITCHING_CONGESTION = 26;
++   /**
++     * @hide
++     */
++    public static final int CHANNEL_NOT_AVAIL = 27;
++   /**
++     * @hide
++     */
++    public static final int RESOURCE_UNAVAILABLE = 28;
++   /**
++     * @hide
++     */
++    public static final int QOS_NOT_AVAIL = 29;
++   /**
++     * @hide
++     */
++    public static final int BEARER_NOT_AVAIL = 30;
++   /**
++     * @hide
++     */
++    public static final int BEARER_NOT_AUTHORIZED = 31;
++   /**
++     * @hide
++     */
++    public static final int SERVICE_NOT_AVAILABLE = 32;
++   /**
++     * @hide
++     */
++    public static final int BEARER_NOT_IMPLEMENT = 33;
++   /**
++     * @hide
++     */
++    public static final int FACILITY_NOT_IMPLEMENT = 34;
++   /**
++     * @hide
++     */
++    public static final int RESTRICTED_BEARER_AVAILABLE = 35;
++   /**
++     * @hide
++     */
++    public static final int OPTION_NOT_AVAILABLE = 36;
++   /**
++     * @hide
++     */
++    public static final int INCOMPATIBLE_DESTINATION = 37;
++   /**
++     * @hide
++     */
++    public static final int CHANNEL_UNACCEPTABLE = 38;
++   /**
++     * @hide
++     */
++    public static final int OPERATOR_DETERMINED_BARRING = 39;
++   /**
++     * @hide
++     */
++    public static final int PRE_EMPTION = 40;
++   /**
++     * @hide
++     */
++    public static final int NON_SELECTED_USER_CLEARING = 41;
++   /**
++     * @hide
++     */
++    public static final int DESTINATION_OUT_OF_ORDER = 42;
++   /**
++     * @hide
++     */
++    public static final int ACCESS_INFORMATION_DISCARDED = 43;
++   /**
++     * @hide
++     */
++    public static final int REQUESTED_FACILITY_NOT_SUBSCRIBED = 44;
++   /**
++     * @hide
++     */
++    public static final int INCOMING_CALL_BARRED_WITHIN_CUG = 45;
++   /**
++     * @hide
++     */
++    public static final int INVALID_TRANSACTION_ID_VALUE = 46;
++   /**
++     * @hide
++     */
++    public static final int USER_NOT_MEMBER_OF_CUG = 47;
++   /**
++     * @hide
++     */
++    public static final int INVALID_TRANSIT_NETWORK_SELECTION = 48;
++   /**
++     * @hide
++     */
++    public static final int SEMANTICALLY_INCORRECT_MESSAGE = 49;
++   /**
++     * @hide
++     */
++    public static final int INVALID_MANDATORY_INFORMATION = 50;
++   /**
++     * @hide
++     */
++    public static final int MESSAGE_TYPE_NON_EXISTENT = 51;
++   /**
++     * @hide
++     */
++    public static final int MESSAGE_TYPE_NOT_COMPATIBLE_WITH_PROT_STATE = 52;	
++   /**
++     * @hide
++     */
++    public static final int IE_NON_EXISTENT_OR_NOT_IMPLEMENTED = 53;	
++   /**
++     * @hide
++     */
++    public static final int CONDITIONAL_IE_ERROR = 54;	
++   /**
++     * @hide
++     */
++    public static final int MESSAGE_NOT_COMPATIBLE_WITH_PROTOCOL_STATE = 55;	
++   /**
++     * @hide
++     */
++    public static final int RECOVERY_ON_TIMER_EXPIRY = 56;	
++   /**
++     * @hide
++     */
++    public static final int PROTOCOL_ERROR_UNSPECIFIED = 57;	
++   /**
++     * @hide
++     */
++    public static final int INTERWORKING_UNSPECIFIED = 58;	
++    //@darren add end	
++	
++	///M: WFC @{
+     /**
+      * @hide  Disconnected because of WFC related reasons
+      * mode.
+      */
+-    public static final int WFC_CALL_ERROR = 11;
++    public static final int WFC_CALL_ERROR = 59;
+     ///@}
+     private int mDisconnectCode;
+     private CharSequence mDisconnectLabel;
+@@ -271,6 +466,152 @@ public final class DisconnectCause implements Parcelable {
+             case CONNECTION_MANAGER_NOT_SUPPORTED:
+                 code = "CONNECTION_MANAGER_NOT_SUPPORTED";
+                 break;
++	    //@darren 20151012 add for common clearcode	    
++	    case UNOBTAINABLE_NUMBER:
++                code = "UNOBTAINABLE_NUMBER";
++                break;
++	    case CONGESTION:
++                code = "CONGESTION";
++                break;
++	    case LIMIT_EXCEEDED:
++                code = "LIMIT_EXCEEDED";
++                break;
++	    case NO_USER_RESPONDING:
++                code = "NO_USER_RESPONDING";
++                break;
++	    case USER_ALERTING_NO_ANSWER:
++                code = "USER_ALERTING_NO_ANSWER";
++                break;
++	    case NO_ROUTE_TO_DESTINATION:
++                code = "NO_ROUTE_TO_DESTINATION";
++                break;
++	    case NORMAL_CLEARING:
++                code = "NORMAL_CLEARING";
++                break;
++	    case CALL_REJECTED:
++                code = "CALL_REJECTED";
++                break;
++	    case NUMBER_CHANGED:
++                code = "NUMBER_CHANGED";
++                break;
++	    case INVALID_NUMBER_FORMAT:
++                code = "INVALID_NUMBER_FORMAT";
++                break;
++	    case FACILITY_REJECTED:
++                code = "FACILITY_REJECTED";
++                break;
++	    case STATUS_ENQUIRY:
++                code = "STATUS_ENQUIRY";
++                break;
++	    case NORMAL_UNSPECIFIED:
++                code = "NORMAL_UNSPECIFIED";
++                break;
++	    case NO_CIRCUIT_AVAIL:
++                code = "NO_CIRCUIT_AVAIL";
++                break;
++	    case NETWORK_OUT_OF_ORDER:
++                code = "NETWORK_OUT_OF_ORDER";
++                break;
++	    case SWITCHING_CONGESTION:
++                code = "SWITCHING_CONGESTION";
++                break;
++	    case CHANNEL_NOT_AVAIL:
++                code = "CHANNEL_NOT_AVAIL";
++                break;
++	    case RESOURCE_UNAVAILABLE:
++                code = "RESOURCE_UNAVAILABLE";
++                break;
++	    case QOS_NOT_AVAIL:
++                code = "QOS_NOT_AVAIL";
++                break;
++	    case BEARER_NOT_AVAIL:
++                code = "BEARER_NOT_AVAIL";
++                break;
++	    case BEARER_NOT_AUTHORIZED:
++                code = "BEARER_NOT_AUTHORIZED";
++                break;
++	    case SERVICE_NOT_AVAILABLE:
++                code = "SERVICE_NOT_AVAILABLE";
++                break;
++	    case BEARER_NOT_IMPLEMENT:
++                code = "BEARER_NOT_IMPLEMENT";
++                break;
++	    case FACILITY_NOT_IMPLEMENT:
++                code = "FACILITY_NOT_IMPLEMENT";
++                break;
++	    case RESTRICTED_BEARER_AVAILABLE:
++                code = "RESTRICTED_BEARER_AVAILABLE";
++                break;
++	    case OPTION_NOT_AVAILABLE:
++                code = "OPTION_NOT_AVAILABLE";
++                break;
++	    case INCOMPATIBLE_DESTINATION:
++                code = "INCOMPATIBLE_DESTINATION";
++                break;
++	    case CHANNEL_UNACCEPTABLE:
++                code = "CHANNEL_UNACCEPTABLE";
++                break;
++	    case OPERATOR_DETERMINED_BARRING:
++                code = "OPERATOR_DETERMINED_BARRING";
++                break;
++	    case PRE_EMPTION:
++                code = "PRE_EMPTION";
++                break;
++	    case NON_SELECTED_USER_CLEARING:
++                code = "NON_SELECTED_USER_CLEARING";
++                break;
++	    case DESTINATION_OUT_OF_ORDER:
++                code = "DESTINATION_OUT_OF_ORDER";
++                break;
++	    case ACCESS_INFORMATION_DISCARDED:
++                code = "ACCESS_INFORMATION_DISCARDED";
++                break;
++	    case REQUESTED_FACILITY_NOT_SUBSCRIBED:
++                code = "REQUESTED_FACILITY_NOT_SUBSCRIBED";
++                break;
++	    case INCOMING_CALL_BARRED_WITHIN_CUG:
++                code = "INCOMING_CALL_BARRED_WITHIN_CUG";
++                break;
++	    case INVALID_TRANSACTION_ID_VALUE:
++                code = "INVALID_TRANSACTION_ID_VALUE";
++                break;
++	    case USER_NOT_MEMBER_OF_CUG:
++                code = "USER_NOT_MEMBER_OF_CUG";
++                break;
++	    case INVALID_TRANSIT_NETWORK_SELECTION:
++                code = "INVALID_TRANSIT_NETWORK_SELECTION";
++                break;
++	    case SEMANTICALLY_INCORRECT_MESSAGE:
++                code = "SEMANTICALLY_INCORRECT_MESSAGE";
++                break;
++	    case INVALID_MANDATORY_INFORMATION:
++                code = "INVALID_MANDATORY_INFORMATION";
++                break;
++	    case MESSAGE_TYPE_NON_EXISTENT:
++                code = "MESSAGE_TYPE_NON_EXISTENT";
++                break;
++	    case MESSAGE_TYPE_NOT_COMPATIBLE_WITH_PROT_STATE:
++                code = "MESSAGE_TYPE_NOT_COMPATIBLE_WITH_PROT_STATE";
++                break;
++	     case IE_NON_EXISTENT_OR_NOT_IMPLEMENTED:
++                code = "IE_NON_EXISTENT_OR_NOT_IMPLEMENTED";
++                break;			
++	     case CONDITIONAL_IE_ERROR:
++                code = "CONDITIONAL_IE_ERROR";
++                break;
++	     case MESSAGE_NOT_COMPATIBLE_WITH_PROTOCOL_STATE:
++                code = "MESSAGE_NOT_COMPATIBLE_WITH_PROTOCOL_STATE";
++                break;
++	     case RECOVERY_ON_TIMER_EXPIRY:
++                code = "RECOVERY_ON_TIMER_EXPIRY";
++                break;
++	     case PROTOCOL_ERROR_UNSPECIFIED:
++                code = "PROTOCOL_ERROR_UNSPECIFIED";
++                break;
++	     case INTERWORKING_UNSPECIFIED:
++                code = "INTERWORKING_UNSPECIFIED";
++                break;				
++	    //@darren add end
+             ///M: WFC @{
+             case WFC_CALL_ERROR:
+                 code = "WFC_CALL_ERROR";
+diff --git a/alps/frameworks/base/telephony/java/android/telephony/DisconnectCause.java b/alps/frameworks/base/telephony/java/android/telephony/DisconnectCause.java
+old mode 100644
+new mode 100755
+index 45b4f4d..f2110d4
+--- a/alps/frameworks/base/telephony/java/android/telephony/DisconnectCause.java
++++ b/alps/frameworks/base/telephony/java/android/telephony/DisconnectCause.java
+@@ -384,6 +384,20 @@ public class DisconnectCause {
+      * @hide
+      */
+     public static final int VOLTE_SS_DATA_OFF              = MTK_DISCONNECTED_CAUSE_BASE + 42;
++
++    //@darren 20150609 add for clear code for telcel.
++    public static final int NORMAL_CLEARING              = MTK_DISCONNECTED_CAUSE_BASE + 43; 
++
++    public static final int NUMBER_CHANGED              = MTK_DISCONNECTED_CAUSE_BASE + 44;
++
++    public static final int STATUS_ENQUIRY              = MTK_DISCONNECTED_CAUSE_BASE + 45;
++
++    public static final int CHANNEL_NOT_AVAIL              = MTK_DISCONNECTED_CAUSE_BASE + 46; 	
++
++    public static final int NETWORK_OUT_OF_ORDER              = MTK_DISCONNECTED_CAUSE_BASE + 47; 
++
++    public static final int QOS_NOT_AVAIL              = MTK_DISCONNECTED_CAUSE_BASE + 48; 
++   //@darren 20150609 add for clear code for telcel end.	
+     /// @}
+ 
+     /// M: IMS feature. @{
+@@ -599,6 +613,20 @@ public class DisconnectCause {
+         /// M: CC022: Error message due to VoLTE SS checking @{
+         case VOLTE_SS_DATA_OFF:
+             return "VOLTE_SS_DATA_OFF";
++       //@darren 20150609 add for clear code for telcel.
++        case NORMAL_CLEARING:  
++	    return "NORMAL_CLEARING";
++	case NUMBER_CHANGED:  
++	    return "NUMBER_CHANGED";
++	case STATUS_ENQUIRY:  
++	    return "STATUS_ENQUIRY";
++	case CHANNEL_NOT_AVAIL:  
++	    return "CHANNEL_NOT_AVAIL";
++	case NETWORK_OUT_OF_ORDER:  
++	    return "NETWORK_OUT_OF_ORDER";
++        case QOS_NOT_AVAIL:  
++	    return "QOS_NOT_AVAIL";	
++	//@darren 20150609 add for clear code for telcel end.	
+         /// @}
+         default:
+             return "INVALID: " + cause;
+diff --git a/alps/frameworks/opt/telephony/src/java/com/android/internal/telephony/dataconnection/DcTracker.java b/alps/frameworks/opt/telephony/src/java/com/android/internal/telephony/dataconnection/DcTracker.java
+old mode 100644
+new mode 100755
+index 0599f71..b4da41b
+--- a/alps/frameworks/opt/telephony/src/java/com/android/internal/telephony/dataconnection/DcTracker.java
++++ b/alps/frameworks/opt/telephony/src/java/com/android/internal/telephony/dataconnection/DcTracker.java
+@@ -127,6 +127,8 @@ import com.mediatek.internal.telephony.ltedc.svlte.SvlteUtils;
+ import java.util.Map.Entry;
+ import java.util.concurrent.atomic.AtomicInteger;
+ 
++import android.widget.Toast;//@darren add for clearcode 49
++
+ /**
+  * {@hide}
+  */
+@@ -143,6 +145,11 @@ public final class DcTracker extends DcTrackerBase implements IratController.OnI
+ 
+     protected int mDisconnectPendingCount = 0;
+ 
++  //@darren 20141128 add for clearcode 29&33
++    private static final String INTENT_TELCEL_CLEAR_CODE_29 = "com.android.telcel.clearcode.received29";
++    private static final String INTENT_TELCEL_CLEAR_CODE_33 = "com.android.telcel.clearcode.received33";
++    //@darren add end
++	
+     /**
+      * Handles changes to the APN db.
+      */
+@@ -2812,6 +2819,27 @@ public final class DcTracker extends DcTrackerBase implements IratController.OnI
+             }
+ 
+             apnContext.removeWaitingApn(apnContext.getApnSetting());
++	    //@darren 20141127 add for clearcode 29&33
++	    if(cause == DcFailCause.USER_AUTHENTICATION){
++		//After three retry finished, if there is clearcode29, trigger a popup action
++		android.util.Log.d("CLEARCODE",">>>>ACTION_CLEARCODE_29  !!");
++                Intent mIntent1 = new Intent(INTENT_TELCEL_CLEAR_CODE_29);
++                mIntent1.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
++                mPhone.getContext().startActivity(mIntent1);
++	    }else if(cause == DcFailCause.SERVICE_OPTION_NOT_SUBSCRIBED){
++                 //After three retry finished, if there is clearcode33, trigger a popup action
++                 android.util.Log.d("CLEARCODE",">>>>ACTION_CLEARCODE_33 !!");
++                 Intent mIntent1 = new Intent(INTENT_TELCEL_CLEAR_CODE_33);
++                 mIntent1.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
++                 mPhone.getContext().startActivity(mIntent1);
++            } else if(cause == DcFailCause.LAST_PDN_DISC_NOT_ALLOWED){
++                 android.util.Log.d("CLEARCODE",">>>>ACTION_CLEARCODE_49  !!"+ cause);
++                 //Intent mIntent1 = new Intent(INTENT_TELCEL_CLEAR_CODE_33);
++                 //mIntent1.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
++                 //mPhone.getContext().startActivity(mIntent1);
++		 Toast.makeText(mPhone.getContext(), "LLAMADA TERMINADA -49-", Toast.LENGTH_SHORT).show();
++            } 
++	    //@darren add end
+             if (DBG) {
+                 log(String.format("onDataSetupComplete: WaitingApns.size=%d" +
+                         " WaitingApnsPermFailureCountDown=%d",
+diff --git a/alps/frameworks/opt/telephony/src/java/com/android/internal/telephony/gsm/GsmConnection.java b/alps/frameworks/opt/telephony/src/java/com/android/internal/telephony/gsm/GsmConnection.java
+old mode 100644
+new mode 100755
+index 2a7f034..ae48254
+--- a/alps/frameworks/opt/telephony/src/java/com/android/internal/telephony/gsm/GsmConnection.java
++++ b/alps/frameworks/opt/telephony/src/java/com/android/internal/telephony/gsm/GsmConnection.java
+@@ -355,12 +355,19 @@ public class GsmConnection extends Connection {
+                 return DisconnectCause.BUSY;
+ 
+             case CallFailCause.NO_CIRCUIT_AVAIL:
++                return DisconnectCause.NO_CIRCUIT_AVAIL;
+             case CallFailCause.TEMPORARY_FAILURE:
++                return DisconnectCause.CONGESTION;
+             case CallFailCause.SWITCHING_CONGESTION:
++                return DisconnectCause.SWITCHING_CONGESTION;
+             case CallFailCause.CHANNEL_NOT_AVAIL:
++		return DisconnectCause.CHANNEL_NOT_AVAIL;//@darren add for clearcode:CHANNEL_NOT_AVAIL
+             case CallFailCause.QOS_NOT_AVAIL:
++		return DisconnectCause.QOS_NOT_AVAIL;//@darren add for clearcode:QOS_NOT_AVAIL		
++              //  return DisconnectCause.CONGESTION;
+             case CallFailCause.BEARER_NOT_AVAIL:
+-                return DisconnectCause.CONGESTION;
++                return DisconnectCause.BEARER_NOT_AVAIL;
++            /// @}
+ 
+             case CallFailCause.ACM_LIMIT_EXCEEDED:
+                 return DisconnectCause.LIMIT_EXCEEDED;
+@@ -398,11 +405,11 @@ public class GsmConnection extends Connection {
+              * Return DisconnectCause.ERROR_UNSPECIFIED to play TONE_CALL_ENDED for
+              * CALL_REJECTED(+CEER: 21) and NORMAL_UNSPECIFIED(+CEER: 31)
+              */
+-            //case CallFailCause.CALL_REJECTED:
+-            //    return DisconnectCause.CALL_REJECTED;
++            case CallFailCause.CALL_REJECTED://@darren modify for telcel
++                return DisconnectCause.CALL_REJECTED;
+ 
+-            //case CallFailCause.NORMAL_UNSPECIFIED:
+-            //    return DisconnectCause.NORMAL_UNSPECIFIED;
++            case CallFailCause.NORMAL_UNSPECIFIED://@darren modify for telcel
++                return DisconnectCause.NORMAL_UNSPECIFIED;
+ 
+             case CallFailCause.INVALID_NUMBER_FORMAT:
+                 return DisconnectCause.INVALID_NUMBER_FORMAT;
+@@ -417,10 +424,11 @@ public class GsmConnection extends Connection {
+                 return DisconnectCause.BEARER_NOT_AUTHORIZED;
+ 
+             case CallFailCause.SERVICE_NOT_AVAILABLE:
++		return DisconnectCause.SERVICE_NOT_AVAILABLE;//@darren modify for telcel
+ 
+             case CallFailCause.NETWORK_OUT_OF_ORDER:
+-                return DisconnectCause.SERVICE_NOT_AVAILABLE;
+-
++                //return DisconnectCause.SERVICE_NOT_AVAILABLE;
++ 				return DisconnectCause.NETWORK_OUT_OF_ORDER;//@darren modify for telcel
+             case CallFailCause.BEARER_NOT_IMPLEMENT:
+                 return DisconnectCause.BEARER_NOT_IMPLEMENT;
+ 
+@@ -439,6 +447,17 @@ public class GsmConnection extends Connection {
+             case CallFailCause.CM_MM_RR_CONNECTION_RELEASE:
+                 return DisconnectCause.CM_MM_RR_CONNECTION_RELEASE;
+ 
++	   //@darren 20141017 add for clear code for telcel. @{
++            case CallFailCause.STATUS_ENQUIRY:
++               return DisconnectCause.STATUS_ENQUIRY;
++
++	    case CallFailCause.NUMBER_CHANGED:
++               return DisconnectCause.NUMBER_CHANGED;
++
++	   case CallFailCause.NORMAL_CLEARING://@darren add for clearcode
++	   	 return DisconnectCause.NORMAL_CLEARING;
++	   //@darren 20141017 add for clear code for telcel end.
++		
+             case CallFailCause.CHANNEL_UNACCEPTABLE:
+                 return DisconnectCause.CHANNEL_UNACCEPTABLE;
+ 
+@@ -504,7 +523,7 @@ public class GsmConnection extends Connection {
+             /// @}
+ 
+             case CallFailCause.ERROR_UNSPECIFIED:
+-            case CallFailCause.NORMAL_CLEARING:
++            //case CallFailCause.NORMAL_CLEARING://@darren add for clearcode
+             default:
+                 GSMPhone phone = mOwner.mPhone;
+                 int serviceState = phone.getServiceState().getState();
+diff --git a/alps/packages/apps/InCallUI/res/values-es-rUS/strings.xml b/alps/packages/apps/InCallUI/res/values-es-rUS/strings.xml
+old mode 100644
+new mode 100755
+index b50c91c..1142ba7
+--- a/alps/packages/apps/InCallUI/res/values-es-rUS/strings.xml
++++ b/alps/packages/apps/InCallUI/res/values-es-rUS/strings.xml
+@@ -169,4 +169,53 @@
+     </plurals>
+     <string name="profile_photo_description" msgid="5609894336203315400">"Foto de perfil"</string>
+     <string name="camera_off_description" msgid="5689494614359429889">"Cámara desactivada"</string>
++     <string name="clearcode_str_1">MARCACION NO DISPONIBLE -01-</string>
++       <string name="clearcode_str_3">USUARIO NO DISPONIBLE -03-</string>
++       <string name="clearcode_str_6">LLAMADA TERMINADA -6-</string>
++       <string name="clearcode_str_8">USUARIO NO DISPONIBLE -08-</string>
++       <string name="clearcode_str_16">--sin texto--</string>
++       <string name="clearcode_str_17">USUARIO OCUPADO</string>
++       <string name="clearcode_str_18">USUARIO NO RESPONDE -18-</string>
++       <string name="clearcode_str_19">USUARIO NO RESPONDE -19-</string>
++       <string name="clearcode_str_21">USUARIO NO DISPONIBLE -21-</string>
++       <string name="clearcode_str_22">MARCACION NO DISPONIBLE -22-</string>
++       <string name="clearcode_str_25">LLAMADA TERMINADA -25-</string>
++       <string name="clearcode_str_26">LLAMADA TERMINADA -26-</string>
++       <string name="clearcode_str_27">USUARIO NO DISPONIBLE -27-</string>
++       <string name="clearcode_str_28">MARCACION NO DISPONIBLE -28-</string>
++       <string name="clearcode_str_29">LLAMADA TERMINADA -29-</string>
++       <string name="clearcode_str_30">LLAMADA TERMINADA -30-</string>
++       <string name="clearcode_str_31">LLAMADA TERMINADA -31-</string>
++       <string name="clearcode_str_34">LLAMADA TERMINADA -34-</string>
++       <string name="clearcode_str_38">LLAMADA TERMINADA -38-</string>
++       <string name="clearcode_str_41">LLAMADA TERMINADA -41-</string>
++       <string name="clearcode_str_42">LLAMADA TERMINADA -42-</string>
++       <string name="clearcode_str_43">LLAMADA TERMINADA -43-</string>
++       <string name="clearcode_str_44">LLAMADA TERMINADA -44-</string>
++       <string name="clearcode_str_47">LLAMADA TERMINADA -47-</string>
++       <string name="clearcode_str_49">LLAMADA TERMINADA -49-</string>
++       <string name="clearcode_str_50">LLAMADA TERMINADA -50-</string>
++       <string name="clearcode_str_55">LLAMADA TERMINADA -55-</string>
++       <string name="clearcode_str_57">LLAMADA TERMINADA -57-</string>
++       <string name="clearcode_str_58">LLAMADA TERMINADA -58-</string>
++       <string name="clearcode_str_63">LLAMADA TERMINADA -63-</string>
++       <string name="clearcode_str_65">LLAMADA TERMINADA -65-</string>
++       <string name="clearcode_str_68">LLAMADA TERMINADA -68-</string>
++       <string name="clearcode_str_69">LLAMADA TERMINADA -69-</string>
++       <string name="clearcode_str_70">LLAMADA TERMINADA -70-</string>
++       <string name="clearcode_str_79">LLAMADA TERMINADA -79-</string>
++       <string name="clearcode_str_81">LLAMADA TERMINADA -81-</string>
++       <string name="clearcode_str_87">LLAMADA TERMINADA -87-</string>
++       <string name="clearcode_str_88">LLAMADA TERMINADA -88-</string>
++       <string name="clearcode_str_91">LLAMADA TERMINADA -91-</string>
++       <string name="clearcode_str_95">LLAMADA TERMINADA -95-</string>
++       <string name="clearcode_str_96">LLAMADA TERMINADA -96-</string>
++       <string name="clearcode_str_97">LLAMADA TERMINADA -97-</string>
++       <string name="clearcode_str_98">LLAMADA TERMINADA -98-</string>
++       <string name="clearcode_str_99">LLAMADA TERMINADA -99-</string>
++       <string name="clearcode_str_100">LLAMADA TERMINADA -100-</string>
++       <string name="clearcode_str_101">LLAMADA TERMINADA -101-</string>
++       <string name="clearcode_str_102">LLAMADA TERMINADA -102-</string>
++       <string name="clearcode_str_111">LLAMADA TERMINADA -111-</string>
++       <string name="clearcode_str_127">LLAMADA TERMINADA -127-</string>
+ </resources>
+diff --git a/alps/packages/apps/InCallUI/res/values/strings.xml b/alps/packages/apps/InCallUI/res/values/strings.xml
+old mode 100644
+new mode 100755
+index c2dd742..bafc1b1
+--- a/alps/packages/apps/InCallUI/res/values/strings.xml
++++ b/alps/packages/apps/InCallUI/res/values/strings.xml
+@@ -456,4 +456,54 @@
+     <!-- Description of the "camera off" icon displayed when the device's camera is disabled during
+          a video call. [CHAR LIMIT=NONE] -->
+     <string name="camera_off_description">Camera off</string>
++<string name="clearcode_str_1">DIAL NOT AVAILABLE -01-</string>
++       <string name="clearcode_str_3">USER NOT AVAILABLE -03-</string>
++       <string name="clearcode_str_6">CALL ENDED -6-</string>
++       <string name="clearcode_str_8">USER NOT AVAILABLE -08-</string>
++       <string name="clearcode_str_16">--no text--</string>
++       <string name="clearcode_str_17">USER BUSY</string>
++       <string name="clearcode_str_18">USER NO RESPONSE -18-</string>
++       <string name="clearcode_str_19">USER NO RESPONSE -19-</string>
++       <string name="clearcode_str_21">USER NOT AVAILABLE -21-</string>
++       <string name="clearcode_str_22">DIAL NOT AVAILABLE -22-</string>
++       <string name="clearcode_str_25">CALL ENDED -25-</string>
++       <string name="clearcode_str_26">CALL ENDED -26-</string>
++       <string name="clearcode_str_27">USER NOT AVAILABLE -27-</string>
++       <string name="clearcode_str_28">DIAL NOT AVAILABLE -28-</string>
++       <string name="clearcode_str_29">CALL ENDED -29-</string>
++       <string name="clearcode_str_30">CALL ENDED -30-</string>       
++       <string name="clearcode_str_31">CALL ENDED -31-</string>
++       <string name="clearcode_str_34">CALL ENDED -34-</string>
++       <string name="clearcode_str_38">CALL ENDED -38-</string>     
++       <string name="clearcode_str_41">CALL ENDED -41-</string>
++       <string name="clearcode_str_42">CALL ENDED -42-</string>
++       <string name="clearcode_str_43">CALL ENDED -43-</string>
++       <string name="clearcode_str_44">CALL ENDED -44-</string>
++       <string name="clearcode_str_47">CALL ENDED -47-</string>
++       <string name="clearcode_str_49">CALL ENDED -49-</string>
++       <string name="clearcode_str_50">CALL ENDED -50-</string>
++       <string name="clearcode_str_55">CALL ENDED -55-</string>
++       <string name="clearcode_str_57">CALL ENDED -57-</string>
++       <string name="clearcode_str_58">CALL ENDED -58-</string>
++       <string name="clearcode_str_63">CALL ENDED -63-</string>
++       <string name="clearcode_str_65">CALL ENDED -65-</string>
++       <string name="clearcode_str_68">CALL ENDED -68-</string>
++       <string name="clearcode_str_69">CALL ENDED -69-</string>
++       <string name="clearcode_str_70">CALL ENDED -70-</string>
++       <string name="clearcode_str_79">CALL ENDED -79-</string>
++       <string name="clearcode_str_81">CALL ENDED -81-</string>
++       <string name="clearcode_str_87">CALL ENDED -87-</string>
++       <string name="clearcode_str_88">CALL ENDED -88-</string>
++       <string name="clearcode_str_91">CALL ENDED -91-</string>
++       <string name="clearcode_str_95">CALL ENDED -95-</string>
++       <string name="clearcode_str_96">CALL ENDED -96-</string>
++       <string name="clearcode_str_97">CALL ENDED -97-</string>
++       <string name="clearcode_str_98">CALL ENDED -98-</string>
++       <string name="clearcode_str_99">CALL ENDED -99-</string>
++       <string name="clearcode_str_100">CALL ENDED -100-</string>
++       <string name="clearcode_str_101">CALL ENDED -101-</string>
++       <string name="clearcode_str_102">CALL ENDED -102-</string>
++       <string name="clearcode_str_111">CALL ENDED -111-</string>
++       <string name="clearcode_str_127">CALL ENDED -127-</string> 
++       
+ </resources>
+diff --git a/alps/packages/apps/InCallUI/src/com/android/incallui/InCallActivity.java b/alps/packages/apps/InCallUI/src/com/android/incallui/InCallActivity.java
+old mode 100644
+new mode 100755
+index 2205d1a..952ad3d
+--- a/alps/packages/apps/InCallUI/src/com/android/incallui/InCallActivity.java
++++ b/alps/packages/apps/InCallUI/src/com/android/incallui/InCallActivity.java
+@@ -78,6 +78,7 @@ import com.mediatek.incallui.ext.IInCallExt;
+ /// M: For Recording @{
+ import com.mediatek.incallui.recorder.PhoneRecorderUtils;
+ import com.mediatek.incallui.wfc.InCallUiWfcUtils;
++import android.widget.Toast;//@darren add for clearcode
+ /// @}
+ 
+ /**
+@@ -1091,7 +1092,158 @@ public class InCallActivity extends Activity implements FragmentDisplayManager {
+         /// M: [@Modification for finishing Transparent InCall Screen if necessary] @{
+         }
+         ///M: WFC <handle first wifi call ends popup> @{
+-        else if ( !isFinishing() && InCallUiWfcUtils.maybeShowWfcError(this, disconnectCause)){
++		else if(disconnectCause.getCode() == DisconnectCause.UNOBTAINABLE_NUMBER) {//@darren 20151012 add for common clearcode
++            Log.d("Clearcode", "Darren for Clearcode 1(busy),case is: " + disconnectCause.getCode());
++	    Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_1, Toast.LENGTH_SHORT).show();
++        } else if(disconnectCause.getCode() == DisconnectCause.BUSY) {		
++ 	    Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_17, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.CONGESTION) {
++ 	    Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_41, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.LIMIT_EXCEEDED) {	
++	   Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_68, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.NO_USER_RESPONDING) {	
++ 	    Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_18, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.USER_ALERTING_NO_ANSWER) {
++ 	    Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_19, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.NO_ROUTE_TO_DESTINATION) {	
++ 	    Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_3, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.NORMAL_CLEARING) {	
++ 		 Log.d("Clearcode", "Darren for Clearcode 16(normal clearing),case is: " + disconnectCause.getCode());
++ 	   Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_16, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.CALL_REJECTED) {
++ 	    Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_21, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.NUMBER_CHANGED) {	
++ 	    Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_22, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.INVALID_NUMBER_FORMAT) {	
++ 	   Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_28, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.FACILITY_REJECTED){	
++ 	    Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_29, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.STATUS_ENQUIRY) {	
++ 	    Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_30, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.NORMAL_UNSPECIFIED) {	
++ 	   Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_31, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.NO_CIRCUIT_AVAIL) {	
++ 	    Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_34, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.NETWORK_OUT_OF_ORDER) {	
++ 	    Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_38, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.SWITCHING_CONGESTION)	{
++ 	    Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_42, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.CHANNEL_NOT_AVAIL) {	
++ 	    Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_44, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.RESOURCE_UNAVAILABLE) {	
++ 	    Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_47, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.QOS_NOT_AVAIL) {	
++ 	    Log.d("Clearcode", "Darren for Clearcode 49(qos_not_avail),case is: " + disconnectCause.getCode());
++ 	    Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_49, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.BEARER_NOT_AVAIL) {
++ 	    Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_58, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.BEARER_NOT_AUTHORIZED) {	
++ 	    Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_57, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.SERVICE_NOT_AVAILABLE) {
++ 	   Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_63, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.BEARER_NOT_IMPLEMENT) {
++ 	    Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_65, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.FACILITY_NOT_IMPLEMENT)	{
++ 	   Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_69, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.RESTRICTED_BEARER_AVAILABLE) {	
++ 	    Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_70, Toast.LENGTH_SHORT).show();	
++ 	} else if(disconnectCause.getCode() == DisconnectCause.OPTION_NOT_AVAILABLE) {	
++ 	    Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_79, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.INCOMPATIBLE_DESTINATION) {	
++ 	    Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_88, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.CHANNEL_UNACCEPTABLE) {
++ 	    Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_6, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.OPERATOR_DETERMINED_BARRING) {	
++ 	    Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_8, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() ==DisconnectCause.PRE_EMPTION) {	
++ 		Log.d("Clearcode", "Darren for Clearcode 16,case is: " + disconnectCause.getCode());
++ 	    Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_25, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.NON_SELECTED_USER_CLEARING) {	
++ 	    Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_26, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.DESTINATION_OUT_OF_ORDER) {	 
++ 	    Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_27, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.ACCESS_INFORMATION_DISCARDED) {	
++ 	    Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_43, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.REQUESTED_FACILITY_NOT_SUBSCRIBED) {	
++ 	   Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_50, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.INCOMING_CALL_BARRED_WITHIN_CUG) {
++ 	   Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_55, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.INVALID_TRANSACTION_ID_VALUE) {
++ 	    Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_81, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.USER_NOT_MEMBER_OF_CUG) {	
++ 	    Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_87, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.INVALID_TRANSIT_NETWORK_SELECTION) {	
++ 	   Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_91, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.SEMANTICALLY_INCORRECT_MESSAGE) {	
++ 	    Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_95, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.INVALID_MANDATORY_INFORMATION) {
++ 	   Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_96, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.MESSAGE_TYPE_NON_EXISTENT) {
++ 	    Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_97, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.MESSAGE_TYPE_NOT_COMPATIBLE_WITH_PROT_STATE) {
++ 	    Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_98, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.IE_NON_EXISTENT_OR_NOT_IMPLEMENTED) {	
++ 	   Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_99, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.CONDITIONAL_IE_ERROR) {
++ 	    Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_100, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.MESSAGE_NOT_COMPATIBLE_WITH_PROTOCOL_STATE) {
++ 	    Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_101, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.RECOVERY_ON_TIMER_EXPIRY) {
++ 	    Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_102, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.PROTOCOL_ERROR_UNSPECIFIED) {	
++ 	    Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_111, Toast.LENGTH_SHORT).show();
++ 	} else if(disconnectCause.getCode() == DisconnectCause.INTERWORKING_UNSPECIFIED) {
++ 	    Toast.makeText(getApplicationContext(),
++                    R.string.clearcode_str_127, Toast.LENGTH_SHORT).show();
++ 	} else if ( !isFinishing() && InCallUiWfcUtils.maybeShowWfcError(this, disconnectCause)){
+         }
+         else if ( !isFinishing() && InCallUiWfcUtils.maybeShowCongratsPopup(this, disconnectCause)){
+         } else {
+diff --git a/alps/packages/apps/PhoneCommon/res/values-es-rUS/strings.xml b/alps/packages/apps/PhoneCommon/res/values-es-rUS/strings.xml
+old mode 100644
+new mode 100755
+index 9d0b8d8..a6dd044
+--- a/alps/packages/apps/PhoneCommon/res/values-es-rUS/strings.xml
++++ b/alps/packages/apps/PhoneCommon/res/values-es-rUS/strings.xml
+@@ -44,4 +44,6 @@
+     <string name="incall_error_missing_voicemail_number" msgid="3651090591812220874">"Número de buzón de voz desconocido"</string>
+     <string name="ringtone_silent" msgid="249805466934178869">"Ninguno"</string>
+     <string name="ringtone_unknown" msgid="2303463713486734520">"Tono desconocido"</string>
++    <string name="callFailed_userBusy_mx" msgid="5163219086553610486">"Llamada finalizada"</string>
++    <string name="callFailed_limitExceeded_mx" msgid="8796663077702587664">"Llamada finalizada"</string>
+ </resources>
+diff --git a/alps/packages/apps/PhoneCommon/res/values/strings.xml b/alps/packages/apps/PhoneCommon/res/values/strings.xml
+old mode 100644
+new mode 100755
+index 24fd6f3..c21f280
+--- a/alps/packages/apps/PhoneCommon/res/values/strings.xml
++++ b/alps/packages/apps/PhoneCommon/res/values/strings.xml
+@@ -70,6 +70,7 @@
+ 
+     <!-- In-call screen: call failure reason (busy) -->
+     <string name="callFailed_userBusy">Line busy</string>
++    <string name="callFailed_userBusy_mx">Line busy</string>
+     <!-- In-call screen: call failure reason (network congestion) -->
+     <string name="callFailed_congestion">Network busy</string>
+     <!-- In-call screen: call failure reason (client timed out) -->
+@@ -88,6 +89,7 @@
+     <string name="callFailed_noSignal">No signal</string>
+     <!-- In-call screen: call failure reason (GSM ACM limit exceeded) -->
+     <string name="callFailed_limitExceeded">ACM limit exceeded</string>
++    <string name="callFailed_limitExceeded_mx">ACM limit exceeded</string>
+     <!-- In-call screen: call failure reason (radio is off) -->
+     <string name="callFailed_powerOff">Radio off</string>
+     <!-- In-call screen: call failure reason (SIM error) -->
+diff --git a/alps/packages/services/Telephony/AndroidManifest.xml b/alps/packages/services/Telephony/AndroidManifest.xml
+old mode 100644
+new mode 100755
+index 3257797..8f7a27c
+--- a/alps/packages/services/Telephony/AndroidManifest.xml
++++ b/alps/packages/services/Telephony/AndroidManifest.xml
+@@ -635,6 +635,23 @@
+             </intent-filter>
+         </receiver>
+ 
++	<!-- @darren add for clear code 29&33-->
++        <activity android:name="com.android.phone.TelcelClearCodeActivity"
++                  android:theme="@android:style/Theme.Dialog">
++             <intent-filter>
++                 <action android:name="com.android.telcel.clearcode.received33" />
++                 <category android:name="android.intent.category.DEFAULT" />
++             </intent-filter>
++        </activity>
++        <activity android:name="com.android.phone.TelcelClearCodeTwentynine"
++                  android:theme="@android:style/Theme.Dialog">
++             <intent-filter>
++                 <action android:name="com.android.telcel.clearcode.received29" />
++                 <category android:name="android.intent.category.DEFAULT" />
++             </intent-filter>
++        </activity>
++         <!-- @darren add end-->
++	 
+         <!-- service to dump telephony information -->
+         <service android:name="HfaService" android:exported="false"/>
+ 
+diff --git a/alps/packages/services/Telephony/src/com/android/phone/TelcelClearCodeActivity.java b/alps/packages/services/Telephony/src/com/android/phone/TelcelClearCodeActivity.java
+new file mode 100755
+index 0000000..cbc865e
+--- /dev/null
++++ b/alps/packages/services/Telephony/src/com/android/phone/TelcelClearCodeActivity.java
+@@ -0,0 +1,48 @@
++package com.android.phone;
++
++import java.io.File;
++import java.io.FileWriter;
++import android.widget.Toast;
++import android.net.Uri;
++import android.content.Intent;
++import android.content.Context;
++import android.util.Log;
++import java.io.FileInputStream;
++import java.io.FileOutputStream;
++import java.io.IOException;
++import java.io.InputStream;
++import android.os.Environment;
++
++import android.app.Activity;
++import android.os.Bundle;
++import android.view.Window;
++import android.view.WindowManager;
++import android.webkit.WebSettings;
++import android.webkit.WebView;
++import android.webkit.WebViewClient;
++import android.webkit.WebSettings.PluginState;
++import android.app.AlertDialog;
++import android.content.DialogInterface;
++
++public class TelcelClearCodeActivity extends Activity
++{
++  private final String TAG = "TelcelClearCodeActivity";
++
++  @Override
++  public void onCreate(Bundle savedInstanceState)
++  {
++    	super.onCreate(savedInstanceState);
++	Log.v(TAG, "onCreate");
++	AlertDialog alert = new AlertDialog.Builder(this)
++            .setTitle("")
++            .setMessage("SIN SUBSCRIPCION AL SERVICIO -33-")
++		.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
++                    public void onClick(DialogInterface dialoginterface, int i) {
++  		finish();
++                    	}
++		})
++            .setCancelable(false)
++            .show();
++  }  
++}
++
+diff --git a/alps/packages/services/Telephony/src/com/android/phone/TelcelClearCodeTwentynine.java b/alps/packages/services/Telephony/src/com/android/phone/TelcelClearCodeTwentynine.java
+new file mode 100755
+index 0000000..b7f4cd6
+--- /dev/null
++++ b/alps/packages/services/Telephony/src/com/android/phone/TelcelClearCodeTwentynine.java
+@@ -0,0 +1,49 @@
++package com.android.phone;
++
++import java.io.File;
++import java.io.FileWriter;
++import android.widget.Toast;
++import android.net.Uri;
++import android.content.Intent;
++import android.content.Context;
++import android.util.Log;
++import java.io.FileInputStream;
++import java.io.FileOutputStream;
++import java.io.IOException;
++import java.io.InputStream;
++import android.os.Environment;
++
++import android.app.Activity;
++import android.os.Bundle;
++import android.view.Window;
++import android.view.WindowManager;
++import android.webkit.WebSettings;
++import android.webkit.WebView;
++import android.webkit.WebViewClient;
++import android.webkit.WebSettings.PluginState;
++import android.app.AlertDialog;
++import android.content.DialogInterface;
++
++public class TelcelClearCodeTwentynine extends Activity
++{
++  private final String TAG = "TelcelClearCodeTwentynine";
++
++  @Override
++  public void onCreate(Bundle savedInstanceState)
++  {
++   	super.onCreate(savedInstanceState);
++	Log.v(TAG, "onCreate");
++	AlertDialog alert = new AlertDialog.Builder(this)
++            .setTitle("")
++            .setMessage("SIN SUBSCRIPCION AL SERVICIO -29-")
++		.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
++                    public void onClick(DialogInterface dialoginterface, int i) {
++  		finish();
++                    	}
++		})
++            .setCancelable(false)
++            .show();
++  }
++   
++}
++
+diff --git a/alps/packages/services/Telephony/src/com/android/services/telephony/DisconnectCauseUtil.java b/alps/packages/services/Telephony/src/com/android/services/telephony/DisconnectCauseUtil.java
+old mode 100644
+new mode 100755
+index 304846c..9e12366
+--- a/alps/packages/services/Telephony/src/com/android/services/telephony/DisconnectCauseUtil.java
++++ b/alps/packages/services/Telephony/src/com/android/services/telephony/DisconnectCauseUtil.java
+@@ -109,9 +109,152 @@ public class DisconnectCauseUtil {
+             case android.telephony.DisconnectCause.CS_RESTRICTED_NORMAL:
+             case android.telephony.DisconnectCause.EMERGENCY_ONLY:
+             case android.telephony.DisconnectCause.FDN_BLOCKED:
+-            case android.telephony.DisconnectCause.LIMIT_EXCEEDED:
++            //case android.telephony.DisconnectCause.LIMIT_EXCEEDED://@darren
+                 return DisconnectCause.RESTRICTED;
+-
++			
++	   //@darren 20151012 add modfiy for common clearcode
++	    case android.telephony.DisconnectCause.UNOBTAINABLE_NUMBER:
++		 return DisconnectCause.UNOBTAINABLE_NUMBER;
++
++	    case android.telephony.DisconnectCause.CONGESTION:
++		  return DisconnectCause.CONGESTION;
++
++	    case android.telephony.DisconnectCause.LIMIT_EXCEEDED:
++		  return DisconnectCause.LIMIT_EXCEEDED;
++
++	    case android.telephony.DisconnectCause.NO_USER_RESPONDING:
++		  return DisconnectCause.NO_USER_RESPONDING;
++
++	    case android.telephony.DisconnectCause.USER_ALERTING_NO_ANSWER:
++		  return DisconnectCause.USER_ALERTING_NO_ANSWER;
++
++  	    case android.telephony.DisconnectCause.NO_ROUTE_TO_DESTINATION:
++		 return DisconnectCause.NO_ROUTE_TO_DESTINATION;
++
++	    case android.telephony.DisconnectCause.NORMAL_CLEARING:
++		  return DisconnectCause.NORMAL_CLEARING;
++
++	    case android.telephony.DisconnectCause.CALL_REJECTED:
++		  return DisconnectCause.CALL_REJECTED;
++
++	    case android.telephony.DisconnectCause.NUMBER_CHANGED:
++		  return DisconnectCause.NUMBER_CHANGED;
++
++	    case android.telephony.DisconnectCause.INVALID_NUMBER_FORMAT:
++		  return DisconnectCause.INVALID_NUMBER_FORMAT;	
++
++	    case android.telephony.DisconnectCause.FACILITY_REJECTED:
++		 return DisconnectCause.FACILITY_REJECTED;
++
++	    case android.telephony.DisconnectCause.STATUS_ENQUIRY:
++		  return DisconnectCause.STATUS_ENQUIRY;
++
++	    case android.telephony.DisconnectCause.NORMAL_UNSPECIFIED:
++		  return DisconnectCause.NORMAL_UNSPECIFIED;
++
++	    case android.telephony.DisconnectCause.NO_CIRCUIT_AVAIL:
++		  return DisconnectCause.NO_CIRCUIT_AVAIL;
++
++	    case android.telephony.DisconnectCause.NETWORK_OUT_OF_ORDER:
++		  return DisconnectCause.NETWORK_OUT_OF_ORDER;
++
++  	    case android.telephony.DisconnectCause.SWITCHING_CONGESTION:
++		 return DisconnectCause.SWITCHING_CONGESTION;
++
++	    case android.telephony.DisconnectCause.CHANNEL_NOT_AVAIL:
++		  return DisconnectCause.CHANNEL_NOT_AVAIL;
++
++	    case android.telephony.DisconnectCause.RESOURCE_UNAVAILABLE:
++		  return DisconnectCause.RESOURCE_UNAVAILABLE;
++
++	    case android.telephony.DisconnectCause.BEARER_NOT_AVAIL:
++		  return DisconnectCause.BEARER_NOT_AVAIL;
++
++	    case android.telephony.DisconnectCause.BEARER_NOT_AUTHORIZED:
++		  return DisconnectCause.BEARER_NOT_AUTHORIZED;	
++		  
++	    case android.telephony.DisconnectCause.SERVICE_NOT_AVAILABLE:
++		  return DisconnectCause.SERVICE_NOT_AVAILABLE;
++		  
++	    case android.telephony.DisconnectCause.BEARER_NOT_IMPLEMENT:
++		  return DisconnectCause.BEARER_NOT_IMPLEMENT;	
++		  
++	    case android.telephony.DisconnectCause.FACILITY_NOT_IMPLEMENT:
++		  return DisconnectCause.FACILITY_NOT_IMPLEMENT;	
++		  
++	    case android.telephony.DisconnectCause.RESTRICTED_BEARER_AVAILABLE:
++		  return DisconnectCause.RESTRICTED_BEARER_AVAILABLE;	
++		  
++	    case android.telephony.DisconnectCause.OPTION_NOT_AVAILABLE:
++		  return DisconnectCause.OPTION_NOT_AVAILABLE;	
++		  
++	    case android.telephony.DisconnectCause.INCOMPATIBLE_DESTINATION:
++		  return DisconnectCause.INCOMPATIBLE_DESTINATION;
++
++	    case android.telephony.DisconnectCause.CHANNEL_UNACCEPTABLE:
++		  return DisconnectCause.CHANNEL_UNACCEPTABLE;	
++		  
++	    case android.telephony.DisconnectCause.OPERATOR_DETERMINED_BARRING:
++		  return DisconnectCause.OPERATOR_DETERMINED_BARRING;	
++		  
++	    case android.telephony.DisconnectCause.PRE_EMPTION:
++		  return DisconnectCause.PRE_EMPTION;	
++		  
++	    case android.telephony.DisconnectCause.NON_SELECTED_USER_CLEARING:
++		  return DisconnectCause.NON_SELECTED_USER_CLEARING;	
++		  
++	    case android.telephony.DisconnectCause.DESTINATION_OUT_OF_ORDER:
++		  return DisconnectCause.DESTINATION_OUT_OF_ORDER;	
++		  
++	    case android.telephony.DisconnectCause.ACCESS_INFORMATION_DISCARDED:
++		  return DisconnectCause.ACCESS_INFORMATION_DISCARDED;	
++		  
++	    case android.telephony.DisconnectCause.REQUESTED_FACILITY_NOT_SUBSCRIBED:
++		  return DisconnectCause.REQUESTED_FACILITY_NOT_SUBSCRIBED;	
++		  
++	    case android.telephony.DisconnectCause.INCOMING_CALL_BARRED_WITHIN_CUG:
++		  return DisconnectCause.INCOMING_CALL_BARRED_WITHIN_CUG;	
++		  
++	    case android.telephony.DisconnectCause.INVALID_TRANSACTION_ID_VALUE:
++		  return DisconnectCause.INVALID_TRANSACTION_ID_VALUE;	 
++		  
++	    case android.telephony.DisconnectCause.USER_NOT_MEMBER_OF_CUG:
++		  return DisconnectCause.USER_NOT_MEMBER_OF_CUG;	
++		  
++	    case android.telephony.DisconnectCause.INVALID_TRANSIT_NETWORK_SELECTION:
++		  return DisconnectCause.INVALID_TRANSIT_NETWORK_SELECTION;
++		  
++	    case android.telephony.DisconnectCause.SEMANTICALLY_INCORRECT_MESSAGE:
++		  return DisconnectCause.SEMANTICALLY_INCORRECT_MESSAGE;	
++		  
++	    case android.telephony.DisconnectCause.INVALID_MANDATORY_INFORMATION:
++		  return DisconnectCause.INVALID_MANDATORY_INFORMATION;		
++		  
++	    case android.telephony.DisconnectCause.MESSAGE_TYPE_NON_EXISTENT:
++		  return DisconnectCause.MESSAGE_TYPE_NON_EXISTENT;	
++		  
++	    case android.telephony.DisconnectCause.MESSAGE_TYPE_NOT_COMPATIBLE_WITH_PROT_STATE:
++		  return DisconnectCause.MESSAGE_TYPE_NOT_COMPATIBLE_WITH_PROT_STATE;
++		  
++	    case android.telephony.DisconnectCause.IE_NON_EXISTENT_OR_NOT_IMPLEMENTED:
++		  return DisconnectCause.IE_NON_EXISTENT_OR_NOT_IMPLEMENTED;	
++		  
++	    case android.telephony.DisconnectCause.CONDITIONAL_IE_ERROR:
++		  return DisconnectCause.CONDITIONAL_IE_ERROR;	
++		  
++	    case android.telephony.DisconnectCause.MESSAGE_NOT_COMPATIBLE_WITH_PROTOCOL_STATE:
++		  return DisconnectCause.MESSAGE_NOT_COMPATIBLE_WITH_PROTOCOL_STATE;		
++
++	    case android.telephony.DisconnectCause.RECOVERY_ON_TIMER_EXPIRY:
++		  return DisconnectCause.RECOVERY_ON_TIMER_EXPIRY;
++		  
++	    case android.telephony.DisconnectCause.PROTOCOL_ERROR_UNSPECIFIED:
++		  return DisconnectCause.PROTOCOL_ERROR_UNSPECIFIED;	
++		  
++	    case android.telephony.DisconnectCause.INTERWORKING_UNSPECIFIED:
++		  return DisconnectCause.INTERWORKING_UNSPECIFIED;		    
++	    //@darren add end
++	    
+             case android.telephony.DisconnectCause.CDMA_ACCESS_FAILURE:
+             case android.telephony.DisconnectCause.CDMA_ALREADY_ACTIVATED:
+             case android.telephony.DisconnectCause.CDMA_CALL_LOST:
+@@ -122,7 +265,7 @@ public class DisconnectCauseUtil {
+             case android.telephony.DisconnectCause.CDMA_REORDER:
+             case android.telephony.DisconnectCause.CDMA_RETRY_ORDER:
+             case android.telephony.DisconnectCause.CDMA_SO_REJECT:
+-            case android.telephony.DisconnectCause.CONGESTION:
++            //case android.telephony.DisconnectCause.CONGESTION://@darren
+             case android.telephony.DisconnectCause.ICC_ERROR:
+             case android.telephony.DisconnectCause.INVALID_CREDENTIALS:
+             case android.telephony.DisconnectCause.INVALID_NUMBER:
+@@ -136,7 +279,7 @@ public class DisconnectCauseUtil {
+             case android.telephony.DisconnectCause.SERVER_ERROR:
+             case android.telephony.DisconnectCause.SERVER_UNREACHABLE:
+             case android.telephony.DisconnectCause.TIMED_OUT:
+-            case android.telephony.DisconnectCause.UNOBTAINABLE_NUMBER:
++            //case android.telephony.DisconnectCause.UNOBTAINABLE_NUMBER://@darren
+             case android.telephony.DisconnectCause.VOICEMAIL_NUMBER_MISSING:
+             case android.telephony.DisconnectCause.ERROR_UNSPECIFIED:
+             /// M: CC022: Error message due to VoLTE SS checking @{
+@@ -181,6 +324,7 @@ public class DisconnectCauseUtil {
+ 
+         Integer resourceId = null;
+         switch (telephonyDisconnectCause) {
++	/*
+             case android.telephony.DisconnectCause.BUSY:
+                 resourceId = R.string.callFailed_userBusy;
+                 break;
+@@ -238,7 +382,7 @@ public class DisconnectCauseUtil {
+             case android.telephony.DisconnectCause.UNOBTAINABLE_NUMBER:
+                 resourceId = R.string.callFailed_unobtainable_number;
+                 break;
+-
++	*/
+             /// M: WFC @{
+             case android.telephony.DisconnectCause.WFC_WIFI_SIGNAL_LOST:
+                 resourceId = R.string.wfc_wifi_call_drop;
+@@ -255,6 +399,7 @@ public class DisconnectCauseUtil {
+             ///@}
+ 
+             default:
++            	resourceId = R.string.callFailed_userBusy_mx;//@darren 20151012 modify for mx clearcode label
+                 break;
+         }
+         return resourceId == null ? "" : context.getResources().getString(resourceId);
