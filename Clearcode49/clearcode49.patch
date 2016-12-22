@@ -1,0 +1,44 @@
+commit d6ae7aba9dabc1aac80b89a998b8e73dcfe10505
+Author: liubinyang <liubinyang@hkzechin.com>
+Date:   Mon May 16 16:17:49 2016 +0800
+
+    [Azumi][Clearcode][BUG-293]修改clearcode49
+
+diff --git a/alps/packages/apps/InCallUI/src/com/android/incallui/CallCardFragment.java b/alps/packages/apps/InCallUI/src/com/android/incallui/CallCardFragment.java
+index 9ca40f4..f942eb5 100644
+--- a/alps/packages/apps/InCallUI/src/com/android/incallui/CallCardFragment.java
++++ b/alps/packages/apps/InCallUI/src/com/android/incallui/CallCardFragment.java
+@@ -496,7 +496,20 @@ public class CallCardFragment extends BaseFragment<CallCardPresenter, CallCardPr
+             }
+             mPrimaryName.setTextDirection(nameDirection);
+         }
++    }   
++  
++    /*@darren add for clearcode49*/
++    // @A: add Clear code dialog    
++    public String setPrimaryName() {
++        // get the number
++        
++        if (mPrimaryName != null) {
++            return mPrimaryName.getText().toString();
++        }
++        
++        return "";
+     }
++    /*@darren add end */
+ 
+     @Override
+     public void setPrimaryImage(Drawable image) {
+diff --git a/alps/packages/apps/InCallUI/src/com/android/incallui/InCallActivity.java b/alps/packages/apps/InCallUI/src/com/android/incallui/InCallActivity.java
+index 952ad3d..d066039 100755
+--- a/alps/packages/apps/InCallUI/src/com/android/incallui/InCallActivity.java
++++ b/alps/packages/apps/InCallUI/src/com/android/incallui/InCallActivity.java
+@@ -1151,7 +1151,7 @@ public class InCallActivity extends Activity implements FragmentDisplayManager {
+  	} else if(disconnectCause.getCode() == DisconnectCause.RESOURCE_UNAVAILABLE) {	
+  	    Toast.makeText(getApplicationContext(),
+                     R.string.clearcode_str_47, Toast.LENGTH_SHORT).show();
+- 	} else if(disconnectCause.getCode() == DisconnectCause.QOS_NOT_AVAIL) {	
++ 	} else if(disconnectCause.getCode() == DisconnectCause.QOS_NOT_AVAIL || mCallCardFragment.setPrimaryName().equals("*00049")) {	
+  	    Log.d("Clearcode", "Darren for Clearcode 49(qos_not_avail),case is: " + disconnectCause.getCode());
+  	    Toast.makeText(getApplicationContext(),
+                     R.string.clearcode_str_49, Toast.LENGTH_SHORT).show();
