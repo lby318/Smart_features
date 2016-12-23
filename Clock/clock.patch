@@ -1,0 +1,20 @@
+commit 819d5b34103ac64b9e6eebad96914393c5111647
+Author: liubinyang <liubinyang@hkzechin.com>
+Date:   Thu Jul 9 15:54:58 2015 +0800
+
+    [平台045][SystemUI]12小时制状态栏时间加上AM/PM显示
+
+diff --git a/alps/frameworks/base/packages/SystemUI/src/com/android/systemui/statusbar/policy/Clock.java b/alps/frameworks/base/packages/SystemUI/src/com/android/systemui/statusbar/policy/Clock.java
+index d3ace32..ef8360e 100644
+--- a/alps/frameworks/base/packages/SystemUI/src/com/android/systemui/statusbar/policy/Clock.java
++++ b/alps/frameworks/base/packages/SystemUI/src/com/android/systemui/statusbar/policy/Clock.java
+@@ -79,7 +79,8 @@ public class Clock extends TextView implements DemoMode {
+                 R.styleable.Clock,
+                 0, 0);
+         try {
+-            mAmPmStyle = a.getInt(R.styleable.Clock_amPmStyle, AM_PM_STYLE_GONE);
++            //mAmPmStyle = a.getInt(R.styleable.Clock_amPmStyle, AM_PM_STYLE_GONE);
++	    mAmPmStyle = AM_PM_STYLE_NORMAL;//@darren 20150709 add for format12 add AM/PM
+         } finally {
+             a.recycle();
+         }
