@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FF224488"
+    tools:context="com.android.factory.GyroscopeSensorTest">
+
+    <ImageView
+        android:id="@+id/gyroscope_image_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/bg"/>
+    <!--
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="200dp"
+        android:layout_marginTop="100dp"
+        android:src="@drawable/air1"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="100dp"
+        android:layout_marginTop="200dp"
+        android:src="@drawable/air2"/>
+	-->
+    <TextView
+        android:id="@+id/description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="80dp"
+		android:layout_marginLeft="10dp"
+		android:shadowColor="#FF000000"
+        android:textSize="24dip"
+        android:textStyle="bold"
+        android:textColor="#FFFFFFFF"
+		android:shadowRadius="1"  
+        android:shadowDx="1"  
+        android:shadowDy="1" 
+    />	
+</FrameLayout>

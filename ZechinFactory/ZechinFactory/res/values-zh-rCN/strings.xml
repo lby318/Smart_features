@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pass">成功</string>
+    <string name="failed">失败</string>
+    <string name="test">测试</string>
+    <string name="test_resoult">测试结果</string>
+    <string name="press">请按：</string>
+    <string name="start">开始测试</string>
+    <string name="retest">重新测试</string>
+    <string name="lcd">LCD</string>
+    <string name="screen">屏幕</string>
+    <string name="no_headset">未检测到耳机，请检查是否插入耳机！</string>
+    <string name="palying_music">正在播放音乐……</string>
+    <string name="sensor">请旋转手机或屏幕</string>
+    <string name="back">完成</string>
+    <string name="sim_info_ok">SIM:正常</string>
+    <string name="sim_info_failed">SIM:未发现</string>
+    <string name="sim1_info_ok">SIM1:正常</string>
+    <string name="sim1_info_failed">SIM1:未发现</string>
+    <string name="sim2_info_ok">SIM2:正常</string>
+    <string name="sim2_info_failed">SIM2:未发现</string>
+    <string name="sdcard_str">SD卡</string>
+    <string name="sdcard_test_success_str">SD卡检测成功！</string>
+    <string name="sdcard_write_success_str">SD卡写文件成功！</string>
+    <string name="sdcard_read_success_str">SD卡读文件成功！</string>
+    <string name="sdcard_test_fail_str">SD卡检测失败！</string>
+    <string name="sdcard_write_fail_str">SD卡写文件失败！</string>
+    <string name="sdcard_read_fail_str">SD卡读文件失败！</string>
+    <string name="BatteryLog">电源</string>
+    <string name="battery_info_status_label">充电状态:</string>
+    <string name="battery_info_scale_label">电池电量:</string>
+    <string name="battery_info_level_label">当前电量:</string>
+    <string name="battery_info_health_label">电源状况:</string>
+    <string name="battery_info_technology_label">电源技术:</string>
+    <string name="battery_info_voltage_label">当前电压:</string>
+    <string name="battery_info_voltage_units">mV</string>
+	<string name="battery_info_chgrvol_label">充电电压:</string>
+    <string name="battery_info_chgrcurr_label">充电电流:</string>
+    <string name="battery_info_chgrcurr_units">mA</string>
+    <string name="battery_info_temperature_label">电源温度:</string>
+    <string name="battery_info_temperature_units">°C</string>
+    <string name="battery_info_uptime">自启动的时间:</string>
+    <string name="battery_info_awake_battery">对电池唤醒时间:</string>
+    <string name="battery_info_awake_plugged">充电时间:</string>
+    <string name="battery_info_screen_on">屏幕打开时间:</string>
+    <string name="battery_info_status_unknown">未知</string>
+    <string name="battery_info_status_charging">充电</string>
+    <string name="battery_info_status_charging_ac">(AC)</string>
+    <string name="battery_info_status_charging_usb">(USB)</string>
+    <string name="battery_info_status_discharging">放电中</string>
+    <string name="battery_info_status_not_charging">未充电</string>
+    <string name="battery_info_status_full">满</string>
+    <string name="battery_info_health_unknown">未知</string>
+    <string name="battery_info_health_good">很好</string>
+    <string name="battery_info_health_overheat">过热</string>
+    <string name="battery_info_health_dead">没电</string>
+    <string name="battery_info_health_over_voltage">电压过高</string>
+    <string name="battery_info_health_unspecified_failure">未知错误</string>
+    <string name="autotest">自动测试</string>
+    <string name="internal_memory">手机容量</string>
+    <string name="sdcard_totalsize">总容量:</string>
+    <string name="sdcard_freesize">剩余容量:</string>
+    <string name="sdcard_tips_failed">没有测到SD卡</string>
+    <string name="sdcard_tips_success">已检测到SD卡</string>
+    <string name="GPS_Success">成功</string>
+    <string name="GPS_satelliteNum">GPS 已搜索到卫星数 :</string>
+    <!--Tim add 20150519 begin -->
+	<string name="GPSAdvance">GPSAdvance</string>
+    <string name="GPS_satelliteSearching">GPS 正在搜索</string>
+	<string name="GPS_satelliteSearched">GPS 已经搜索到</string>
+	<string name="GPS_satelliteUnSearched">未发现</string>
+	<string name="GPS_satellite">号卫星</string>
+	<string name="GPS_failed">"失败!未搜到"</string>
+	<string name="GPS_failed_number">"颗星信号值超过"</string>
+	<string name="GPS_try_again">",请再试一次!"</string>
+    <!--Tim add 20150519 end -->
+	<string name="gyroscopeDescription">请晃动手机以便观察画面中的视野随手机晃动，如果一致，则为正常</string>
+	<string name="GPS_Signal">GPS 信号 :</string>
+    <string name="GPS_time">耗时： %s 分</string>
+    <string name="GPS_connect">GPS 已打开, 正在连接...</string>
+    <string name="GSensor">重力传感器</string>
+    <string name="GSensor_info">竖立,平放,侧立,观察重力变化!</string>
+    <string name="x_coordinate">X坐标:</string>
+    <string name="y_coordinate">Y坐标:</string>
+    <string name="z_coordinate">Z坐标:</string>
+    <string name="gsensor_name">重力传感</string>
+    <string name="Text_ALSPS_VALUE_CLOSE">当前距离传感器的值为：接近</string>
+    <string name="Text_ALSPS_VALUE_AWAY">当前距离传感器的值为：远离</string>
+    <string name="Button_Status_Success">成功</string>
+    <string name="Button_Status_Fail">失败</string>
+    <string name="Text_Gsensor">1. 重力传感器</string>
+    <string name="GSensor_Test_Info">请倾斜转动机身以改变重力传感器值</string>
+    <string name="tv_G_X1">X+:</string>
+    <string name="tv_G_X2">X-:</string>
+    <string name="tv_G_Y1">Y+:</string>
+    <string name="tv_G_Y2">Y-:</string>
+    <string name="tv_G_Z1">Z+:</string>
+    <string name="tv_G_Z2">Z-:</string>
+    <string name="tv_G_ceshi">测试中..</string>
+    <string name="Text_ALS">2. 光度传感器</string>
+    <string name="ALSSensor_Test_Info_False">请大面积触摸TP</string>
+		<string name="Lsensor">在强光和暗光地方观察数值变化</string>
+    <string name="ElectricCurrent">当前电流 : </string>
+    <string name="LEDstr">LED</string>
+    <string name="led_button">LED灯</string>
+    <string name="red_button">红</string>
+    <string name="green_button">绿</string>
+    <string name="blue_button">蓝</string>
+    <string name="mounting_memery_devices">正在挂载存储设备,请稍后尝试</string>
+    <string name="Gyroscope">陀螺仪</string>
+    <string name="Gyroscope_Test_Info">请倾斜转动机身以改变陀螺仪值</string>
+    <string name="Text_Gyroscope">1. 陀螺仪</string>
+    <string name="Compass">指南针</string>
+    <string-array name="items">
+	    <item >开关键</item>
+	    <item >上音量键</item>
+	    <item >下音量键</item>
+	    <!--<item >Home键</item>
+	    <item >菜单键</item>
+	    <item >返回键</item>-->
+	    <item >背光</item>
+	    <item >LCD</item>
+	    <item >闪光灯</item>
+	    <item >麦克风</item>
+	    <item >喇叭</item>
+	    <item >耳机</item>
+	    <item >马达</item>
+	    <item >蓝牙</item>
+	    <item >WIFI</item>
+	    <item >GPS</item>
+	    <item >摄像头</item>
+	    <item >加速传感器</item>
+	    <item >SD卡</item>
+	    <item >收音机</item>
+	    <item >屏幕</item>
+	    <item >听筒</item>
+	    <item >光感</item>
+	    <!--<item >LED</item>-->
+	    <item >陀螺仪</item>
+		<item >指南针</item>
+    </string-array>
+    <string-array name="items_short">
+	    <item >物理按键</item>
+	    <item >背光</item>
+	    <item >LCD</item>
+	    <item >闪光灯</item>
+	    <item >麦克风</item>
+	    <item >喇叭</item>
+	    <item >耳机</item>
+	    <item >马达</item>
+	    <item >蓝牙</item>
+	    <item >WIFI</item>
+	    <item >GPS</item>
+	    <item >摄像头</item>
+	    <item >加速传感器</item>
+	    <item >SD卡</item>
+	    <item >收音机</item>
+	    <item >屏幕</item>
+	    <item >听筒</item>
+	    <!--<item >键盘灯</item>-->
+	    <item >SIM</item>
+	    <item >电源</item>
+	    <item >光感</item>
+	    <!--<item >LED</item>-->
+	    <item >陀螺仪</item>
+		<item >指南针</item>
+    </string-array>
+    <string-array name="items_short_no_gps">
+            <item >物理按键</item>
+            <item >背光</item>
+            <item >LCD</item>
+            <item >闪光灯</item>
+            <item >麦克风</item>
+            <item >喇叭</item>
+            <item >耳机</item>
+            <item >马达</item>
+            <item >蓝牙</item>
+            <item >WIFI</item>
+            <item >摄像头</item>
+            <item >加速传感器</item>
+            <item >SD卡</item>
+            <item >收音机</item>
+            <item >屏幕</item>
+            <item >听筒</item>
+           <!-- <item >键盘灯</item>-->
+            <item >SIM</item>
+            <item >电源</item>
+            <item >光感</item>
+            <!--<item >LED</item>-->
+	    <item >陀螺仪</item>
+		<item >指南针</item>
+    </string-array>
+</resources>

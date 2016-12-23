@@ -1,0 +1,21 @@
+commit 3a8b255711780765f9a4e5c8c3a1127d1c732aee
+Author: xielianxiong <xielianxiong@hkzechin.com>
+Date:   Mon Jan 25 17:51:43 2016 +0800
+
+    [平台][ZechinFactory]调用编译ZechinFactory
+
+diff --git a/alps/device/mediatek/common/device.mk b/alps/device/mediatek/common/device.mk
+index 760c9a4..5d6e1fc 100644
+--- a/alps/device/mediatek/common/device.mk
++++ b/alps/device/mediatek/common/device.mk
+@@ -1507,6 +1507,10 @@ endif
+ #For 3rd party NLP provider
+ PRODUCT_PACKAGES += Baidu_Location
+ 
++#starmen add begin
++PRODUCT_PACKAGES += ZechinFactory
++#starmen add end
++
+ # open TouchPal in OP02
+ ifeq (OP02,$(word 1,$(subst _, ,$(OPTR_SPEC_SEG_DEF))))
+   ifneq ($(strip $(MTK_BSP_PACKAGE)), yes)

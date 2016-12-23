@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, FactoryActivity!</string>
+    <string name="app_name">Factory</string>
+    <string name="pass">Success</string>
+    <string name="failed">Failure</string>
+    <string name="test">Test</string>
+    <string name="test_resoult">Test results</string>
+    <string name="press">Please press：</string>
+    <string name="start">Start test</string>
+    <string name="retest">To test</string>
+    <string name="lcd">LCD</string>
+    <string name="screen">Screen</string>
+    <string name="no_headset">Does not detect the headphones,please check whether the insert earphones!</string>
+    <string name="palying_music">Playing music……</string>
+    <string name="sensor">Please rotate the mobile phone or screen</string>
+    <string name="back">Done</string>
+    <string name="sim_info_ok">SIM:OK</string>
+    <string name="sim_info_failed">SIM:Not exist</string>
+    <string name="sim1_info_ok">SIM1:OK</string>
+    <string name="sim1_info_failed">SIM1:Not exist</string>
+    <string name="sim2_info_ok">SIM2:OK</string>
+    <string name="sim2_info_failed">SIM2:Not exist</string>
+    <string name="sdcard_str">SDcard</string>
+    <string name="sdcard_test_success_str">SDcard test success !</string>
+    <string name="sdcard_write_success_str">SDcard write success!</string>
+    <string name="sdcard_read_success_str">SDcard read success!</string>
+    <string name="sdcard_test_fail_str">SDcard test fail!</string>
+    <string name="sdcard_write_fail_str">SDcard write fail!</string>
+    <string name="sdcard_read_fail_str">SDcard read fail!</string>
+    <string name="BatteryLog">Power</string>
+    <string name="battery_info_status_label">Charging Status:</string>
+    <string name="battery_info_scale_label">Battery:</string>
+    <string name="battery_info_level_label">Current:</string>
+    <string name="battery_info_health_label">Battery Status:</string>
+    <string name="battery_info_technology_label">Technology:</string>
+    <string name="battery_info_voltage_label">Current Voltage:</string>
+    <string name="battery_info_voltage_units">mV</string>
+    <string name="battery_info_chgrvol_label">Charger vol:</string>
+    <string name="battery_info_chgrcurr_label">Charger cur:</string>
+    <string name="battery_info_chgrcurr_units">mA</string>    
+    <string name="battery_info_temperature_label">Temperature:</string>
+    <string name="battery_info_temperature_units">°C</string>
+    <string name="battery_info_uptime">uptime:</string>
+    <string name="battery_info_awake_battery">awake_battery:</string>
+    <string name="battery_info_awake_plugged">awake_plugged:</string>
+    <string name="battery_info_screen_on">screen_on:</string>
+    <string name="battery_info_status_unknown">Unknown</string>
+    <string name="battery_info_status_charging">Charging</string>
+    <string name="battery_info_status_charging_ac">(AC)</string>
+    <string name="battery_info_status_charging_usb">(USB)</string>
+    <string name="battery_info_status_discharging">Discharging</string>
+    <string name="battery_info_status_not_charging">Not Charging</string>
+    <string name="battery_info_status_full">Full</string>
+    <string name="battery_info_health_unknown">Unknown</string>
+    <string name="battery_info_health_good">Good</string>
+    <string name="battery_info_health_overheat">Overheat</string>
+    <string name="battery_info_health_dead">Battery Low</string>
+    <string name="battery_info_health_over_voltage">Over Voltage</string>
+    <string name="battery_info_health_unspecified_failure">Unknow Error</string>
+    <string name="autotest">Auto Test</string>
+    <string name="internal_memory">Phone memory</string>
+    <string name="sdcard_totalsize">Total memory:</string>
+    <string name="sdcard_freesize">Free memory:</string>
+    <string name="sdcard_tips_failed">No SDcard</string>
+    <string name="sdcard_tips_success">SDcard found</string>
+		<string name="linear_test">TP</string>
+		<string name="GPS">GPS</string>
+		<string name="GPS_Success">GPS_Success</string>
+		<string name="GPS_satelliteNum">GPS found Satellite numbers:</string>
+    <!--Tim add 20150519 begin -->
+	<string name="GPSAdvance">GPSAdvance</string>
+    <string name="GPS_satelliteSearching"> GPS is searching </string>
+	<string name="GPS_satelliteSearched"> GPS is searched</string>
+	<string name="GPS_satelliteUnSearched"> Not found </string>
+	<string name="GPS_satellite"> number Satellite</string>
+	<string name="GPS_failed">"Failed! unreach "</string>
+	<string name="GPS_failed_number">" satellites over "</string>
+	<string name="GPS_try_again">" Try again,please. "</string>
+    <!--Tim add 20150519 end -->
+	<string name="gyroscopeDescription">Please shake the phone in order to observe the screen with the mobile phone shaking the field of view, if the same is success</string>
+		<string name="GPS_Signal">GPS Signal:</string>
+		<string name="gps_name">GPS</string>
+		<string name="GPS_time">take time: %s min</string>
+		<string name="GPS_connect">GPS is open,connecting ...</string>
+		<string name="GSensor">GSensor</string>
+		<string name="GSensor_info">Erect,flat,Celi,observed gravity changes!</string>
+		<string name="x_coordinate">X coordinate:</string>
+		<string name="y_coordinate">Y coordinate:</string>
+		<string name="z_coordinate">Z coordinate:</string>
+		<string name="gsensor_name">Gravity Sensor</string>
+		<string name="Button_Status_Success">Success</string>
+		<string name="Button_Status_Fail">Failed</string>
+    <string name="Text_ALSPS_VALUE_CLOSE">Current distance sensor values: Approaching</string>
+    <string name="Text_ALSPS_VALUE_AWAY">Current distance sensor values: away</string>
+    <string name="Text_Gsensor">1. Gsensor</string>
+    <string name="GSensor_Test_Info">please turn the body to change the gravity tilt sensor value</string>
+    <string name="tv_G_X1">X +:</string>
+    <string name="tv_G_X2">X -:</string>
+    <string name="tv_G_Y1">Y +:</string>
+    <string name="tv_G_Y2">Y -:</string>
+    <string name="tv_G_Z1">Z +:</string>
+    <string name="tv_G_Z2">Z -:</string>
+    <string name="tv_G_ceshi">Testing ..</string>
+    <string name="Text_ALS">2. ALsensor</string>
+    <string name="ALSSensor_Test_Info_False">Please touch TP</string>
+		<string name="Lsensor">Observe values change in light and dark place</string>
+		<string name="ElectricCurrent">Electric Current : </string>
+     <string name="LEDstr">LED</string>
+     <string name="led_button">LED test</string>
+     <string name="red_button">Red</string>
+     <string name="green_button">Green</string>
+     <string name="blue_button">Blue</string>
+     <string name="mounting_memery_devices">Mounting storage device,Please wait a moment later</string>
+     <string name="Gyroscope">Gyroscope</string>
+     <string name="Gyroscope_Test_Info">please turn the body to change the gyroscope tilt sensor value</string>
+    <string name="Text_Gyroscope">1. Gyroscope</string>
+    <string name="Compass">Compass</string>
+    <string-array name="items">
+        <item >Open key</item>
+        <item >On the volume keys</item>
+        <item >Volume down key</item>
+        <!--<item >Home key</item>
+        <item >Menu key</item>
+        <item >Return key</item>-->
+        <item >Backlight</item>
+        <item >LCD</item>
+        <item >Flash lamp</item>
+        <item >Microphone</item>
+        <item >Horn</item>
+
+        <item >Earphone</item>
+        <item >Motor</item>
+        <item >Bluetooth</item>
+        <item >WIFI</item>
+        <item >GPS</item>
+        <item >Camera</item>
+        <item >Acceleration sensor</item>
+        <item >SD card</item>
+        <item >The radio</item>
+        <item >Screen</item>
+	    <item >Earpiece</item>
+	    <item >Light preception</item>
+	      <!--<item >LED</item>-->
+	      <item >Gyroscope sensor</item>
+          <item >Compass</item>
+<!--
+        <item >Magnetic sensor</item>
+-->
+    </string-array>
+    <string-array name="items_short">
+        <item >Physics key</item>
+        <item >Backlight</item>
+        <item >LCD</item>
+        <item >Flash lamp</item>
+        <item >Microphone</item>
+        <item >Horn</item>
+        <item >Earphone</item>
+        <item >Motor</item>
+        <item >Bluetooth</item>
+        <item >WIFI</item>
+        <item >GPS</item>
+        <item >Camera</item>
+        <item >Acceleration sensor</item>
+        <item >SD card</item>
+        <item >The radio</item>
+        <item >Screen</item>
+	<item >Earpiece</item>
+	<!--<item >Keypad Light</item>-->
+	<item >SIM</item>
+	<item >Charger</item>
+       <item >Light sensor</item>
+       <!--<item >LED</item>-->
+	     <item >Gyroscope sensor</item>
+      <item >Compass</item>
+    </string-array>
+    <string-array name="items_short_no_gps">
+        <item >Physics key</item>
+        <item >Backlight</item>
+        <item >LCD</item>
+        <item >Flash lamp</item>
+        <item >Microphone</item>
+        <item >Horn</item>
+        <item >Earphone</item>
+        <item >Motor</item>
+        <item >Bluetooth</item>
+        <item >WIFI</item>
+        <item >Camera</item>
+        <item >Acceleration sensor</item>
+        <item >SD card</item>
+        <item >The radio</item>
+        <item >Screen</item>
+        <item >Earpiece</item>
+        <!--<item >Keypad Light</item>-->
+        <item >SIM</item>
+        <item >Charger</item>
+        <item >Light sensor</item>
+        <!--<item >LED</item>-->
+	      <item >Gyroscope sensor</item>
+		  <item >Compass</item>
+    </string-array>
+    
+</resources>

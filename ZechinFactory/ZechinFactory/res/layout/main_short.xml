@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:background="#000000"
+    android:id="@+id/content">
+    <!-- Tim add id content for LM-113 -->
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+	    <Button
+	        android:layout_width="fill_parent"
+	        android:layout_height="46dp"
+	        android:id="@+id/test_all"
+	        android:text="@string/autotest"
+	        android:layout_margin="3dp"
+			android:background="@drawable/btn_bg"
+			android:textSize="16sp"
+			android:textColor="#FF000000"/>
+	    <LinearLayout
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="horizontal">
+	        <TextView   android:id="@+id/id_text00" style="@style/text_style"   />
+	        <TextView   android:id="@+id/id_text01" style="@style/text_style"   />
+	        <TextView   android:id="@+id/id_text02" style="@style/text_style"   />
+	    </LinearLayout>
+
+	    <LinearLayout
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="horizontal">
+	        <TextView   android:id="@+id/id_text03" style="@style/text_style"   />
+	        <TextView   android:id="@+id/id_text04" style="@style/text_style"   />
+	        <TextView   android:id="@+id/id_text05" style="@style/text_style"   />
+	    </LinearLayout>
+
+	    <LinearLayout
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="horizontal">
+	        <TextView   android:id="@+id/id_text06" style="@style/text_style"   />
+	        <TextView   android:id="@+id/id_text07" style="@style/text_style"   />
+	        <TextView   android:id="@+id/id_text08" style="@style/text_style"   />
+	    </LinearLayout>
+
+	    <LinearLayout
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="horizontal">
+	        <TextView   android:id="@+id/id_text09" style="@style/text_style"   />
+	        <TextView   android:id="@+id/id_text10" style="@style/text_style"   />
+	        <TextView   android:id="@+id/id_text11" style="@style/text_style"   />
+	    </LinearLayout>
+
+	    <LinearLayout
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="horizontal">
+	        <TextView   android:id="@+id/id_text12" style="@style/text_style"   />
+	        <TextView   android:id="@+id/id_text13" style="@style/text_style"   />
+	        <TextView   android:id="@+id/id_text14" style="@style/text_style"   />
+	    </LinearLayout>
+
+	    <LinearLayout
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="horizontal">
+	        <TextView   android:id="@+id/id_text15" style="@style/text_style"   />
+	        <TextView   android:id="@+id/id_text16" style="@style/text_style"   />
+	        <TextView   android:id="@+id/id_text17" style="@style/text_style"   />
+	    </LinearLayout>
+
+	    <LinearLayout
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="horizontal">
+	        <TextView   android:id="@+id/id_text18" style="@style/text_style"   />
+	        <TextView   android:id="@+id/id_text19" style="@style/text_style"   />
+	        <!--<TextView   android:id="@+id/id_text20" style="@style/text_style"   />-->
+	    </LinearLayout>
+	    <!--zgq 20160129 add: android:visibility="gone"-->
+	    <LinearLayout
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="horizontal">
+	        <TextView   android:id="@+id/id_text21" style="@style/text_style"   />
+			<!-- Tim add for compass test -->
+			<TextView   android:id="@+id/id_text22" style="@style/text_style"   />
+	    </LinearLayout>
+		<TextView
+			android:layout_width="fill_parent"
+			android:layout_height="46dp"
+			android:id="@+id/calibration_result"
+			android:layout_margin="3dp"
+			android:background="@drawable/btn_bg"
+			android:textSize="16sp"
+			android:gravity="center"
+		/>
+		<!-- hetian add for wifi address 20160112 -->
+               <TextView
+                       android:layout_width="fill_parent"
+                       android:layout_height="40dp"
+                       android:id="@+id/mac_address"
+                       android:layout_margin="3dp"
+                       android:background="@drawable/btn_bg"
+                       android:textSize="16sp"
+                       android:gravity="center"
+               />
+
+	</LinearLayout>
+</RelativeLayout>

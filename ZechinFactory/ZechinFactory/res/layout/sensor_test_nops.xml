@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <TextView android:textSize="20.0dip" android:textColor="#ff0000ff" android:id="@+id/tv_G" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/Text_Gsensor" android:layout_alignParentLeft="true" android:layout_alignParentTop="true" />
+    <TextView android:textSize="20.0dip" android:id="@+id/tv_G_result" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_toRightOf="@id/tv_G" android:layout_alignParentTop="true" />
+    <TextView android:textAppearance="?android:textAppearanceMedium" android:textSize="20.0dip" android:id="@+id/textView2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/GSensor_Test_Info" android:layout_below="@id/tv_G" android:layout_alignParentLeft="true" />
+    <LinearLayout android:orientation="vertical" android:id="@+id/linearLayout1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_below="@id/textView2" android:layout_alignParentLeft="true">
+        <TextView android:textAppearance="?android:textAppearanceMedium" android:textSize="18.0dip" android:id="@+id/Gsensor_X" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+        <TextView android:textAppearance="?android:textAppearanceMedium" android:textSize="18.0dip" android:id="@+id/Gsensor_Y" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+        <TextView android:textAppearance="?android:textAppearanceMedium" android:textSize="18.0dip" android:id="@+id/Gsensor_Z" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+    </LinearLayout>
+    <RelativeLayout android:id="@+id/RL_xyz" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_below="@id/linearLayout1" android:layout_alignParentLeft="true">
+        <TextView android:textSize="20.0dip" android:textColor="#ff0000ff" android:id="@+id/tv_G_X" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/tv_G_X1" android:layout_below="@id/tv_G" />
+        <TextView android:textSize="20.0dip" android:id="@+id/tv_G_XR" android:layout_width="100.0dip" android:layout_height="wrap_content" android:text="@string/tv_G_ceshi" android:layout_toRightOf="@id/tv_G_X" android:layout_below="@id/tv_G" />
+        <TextView android:textSize="20.0dip" android:textColor="#ff0000ff" android:id="@+id/tv_G_X1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/tv_G_X2" android:layout_toRightOf="@id/tv_G_XR" android:layout_below="@id/tv_G" />
+        <TextView android:textSize="20.0dip" android:id="@+id/tv_G_XR1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/tv_G_ceshi" android:layout_toRightOf="@id/tv_G_X1" android:layout_below="@id/tv_G" />
+        <TextView android:textSize="20.0dip" android:textColor="#ff0000ff" android:id="@+id/tv_G_Y" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/tv_G_Y1" android:layout_below="@id/tv_G_X" />
+        <TextView android:textSize="20.0dip" android:id="@+id/tv_G_YR" android:layout_width="100.0dip" android:layout_height="wrap_content" android:text="@string/tv_G_ceshi" android:layout_toRightOf="@id/tv_G_Y" android:layout_below="@id/tv_G_X" />
+        <TextView android:textSize="20.0dip" android:textColor="#ff0000ff" android:id="@+id/tv_G_Y1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/tv_G_Y2" android:layout_toRightOf="@id/tv_G_YR" android:layout_below="@id/tv_G_X" />
+        <TextView android:textSize="20.0dip" android:id="@+id/tv_G_YR1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/tv_G_ceshi" android:layout_toRightOf="@id/tv_G_Y1" android:layout_below="@id/tv_G_X" />
+        <TextView android:textSize="20.0dip" android:textColor="#ff0000ff" android:id="@+id/tv_G_Z" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/tv_G_Z1" android:layout_below="@id/tv_G_Y" />
+        <TextView android:textSize="20.0dip" android:id="@+id/tv_G_ZR" android:layout_width="100.0dip" android:layout_height="wrap_content" android:text="@string/tv_G_ceshi" android:layout_toRightOf="@id/tv_G_Z" android:layout_below="@id/tv_G_Y" />
+        <TextView android:textSize="20.0dip" android:textColor="#ff0000ff" android:id="@+id/tv_G_Z1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/tv_G_Z2" android:layout_toRightOf="@id/tv_G_ZR" android:layout_below="@id/tv_G_Y" />
+        <TextView android:textSize="20.0dip" android:id="@+id/tv_G_ZR1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/tv_G_ceshi" android:layout_toRightOf="@id/tv_G_Z1" android:layout_below="@id/tv_G_Y" />
+    </RelativeLayout>
+    <RelativeLayout android:orientation="vertical" android:id="@+id/ll_juli" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="5.0dip" android:layout_below="@id/RL_xyz" android:layout_alignParentLeft="true">
+        <TextView android:textSize="20.0dip" android:textColor="#ff0000ff" android:id="@+id/tv_AL" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/Text_ALS" />
+        <TextView android:textSize="20.0dip" android:id="@+id/tv_AL_result" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_toRightOf="@id/tv_AL" />
+        <TextView android:textAppearance="?android:textAppearanceMedium" android:textSize="20.0dip" android:id="@+id/textView3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/ALSSensor_Test_Info_False" android:layout_below="@id/tv_AL" />
+        <TextView android:textAppearance="?android:textAppearanceMedium" android:textSize="20.0dip" android:id="@+id/AlsPs_Light" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/Text_ALSPS_VALUE_AWAY" android:layout_below="@id/textView3" />
+    </RelativeLayout>
+</RelativeLayout>

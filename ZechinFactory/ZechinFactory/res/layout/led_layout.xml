@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:gravity="center"
+    >
+
+	<Button
+	       android:id="@+id/led_button"
+		android:layout_width="200dip"
+		android:layout_height="60dip"
+	    	android:text="@string/led_button"/>
+		<!--  
+	<Button
+		android:id="@+id/green_button"
+		android:text="@string/green_button"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="20dip"/>
+	
+	<Button
+		android:id="@+id/blue_button"
+		android:text="@string/blue_button"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="20dip"/>
+	
+	    <TextView
+        android:id="@+id/id_led"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        />
+        -->
+		
+    	
+</LinearLayout>
+
