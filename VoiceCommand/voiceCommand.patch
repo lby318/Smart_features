@@ -1,0 +1,17 @@
+commit aa7dc8efa01ac7f53427fc478a90145125c9cdf5
+Author: xielianxiong <xielianxiong@hkzechin.com>
+Date:   Tue May 24 17:32:30 2016 +0800
+
+    [平台009][VoiceCommand]语音拍照默认为英语
+
+diff --git a/alps/vendor/mediatek/proprietary/packages/apps/VoiceCommand/res/xml/voicelanguage.xml b/alps/vendor/mediatek/proprietary/packages/apps/VoiceCommand/res/xml/voicelanguage.xml
+index 86692c7..13a8edb 100644
+--- a/alps/vendor/mediatek/proprietary/packages/apps/VoiceCommand/res/xml/voicelanguage.xml
++++ b/alps/vendor/mediatek/proprietary/packages/apps/VoiceCommand/res/xml/voicelanguage.xml
+@@ -3,5 +3,5 @@
+     <Language TypeName="简体中文" ID="1" Code="zh-CN" FileName="keyword/1.xml" />
+     <Language TypeName="繁體中文" ID="2" Code="zh-TW" FileName="keyword/2.xml" />
+     <Language TypeName="English" ID="3" Code="en-US" FileName="keyword/3.xml" />
+-    <DefaultLanguage ID="1" />
++    <DefaultLanguage ID="3" />
+ </Languages>
