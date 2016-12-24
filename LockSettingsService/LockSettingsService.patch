@@ -1,0 +1,24 @@
+commit 525b808ab3a9c854b729e930a4f54d791edf0b49
+Author: zouguanbo <zouguanbo@hkzechin.com>
+Date:   Mon Oct 17 18:38:58 2016 +0800
+
+    [平台201][services][NN-35]解决设置密码后马上拔电池后无法修改和设置密码的问题
+
+diff --git a/alps/frameworks/base/services/core/java/com/android/server/LockSettingsService.java b/alps/frameworks/base/services/core/java/com/android/server/LockSettingsService.java
+old mode 100644
+new mode 100755
+index 1b8ee80..8111872
+--- a/alps/frameworks/base/services/core/java/com/android/server/LockSettingsService.java
++++ b/alps/frameworks/base/services/core/java/com/android/server/LockSettingsService.java
+@@ -613,6 +613,11 @@ public class LockSettingsService extends ILockSettings.Stub {
+         if (TextUtils.isEmpty(credential)) {
+             return VerifyCredentialResponse.ERROR;
+         }
++        
++        /* zouguanbo 20161017 add for Jria NN-35 when storedHash is null, need return true */
++        if (storedHash == null) {
++            return VerifyCredentialResponse.OK;
++        }
+ 
+         if (storedHash.version == CredentialHash.VERSION_LEGACY) {
+             byte[] hash = credentialUtil.toHash(credential, userId);
