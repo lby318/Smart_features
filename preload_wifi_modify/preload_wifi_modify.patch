@@ -1,0 +1,97 @@
+commit 1d1d3b869e552aa6b688fdf199ad6d18fcd13c16
+Author: liangjianqiu <liangjianqiu@hkzechin.com>
+Date:   Sat Jan 14 11:15:19 2017 +0800
+
+    [Bmobile][Wifi]修改默认 MOVISTAR WIFI 的加密类型，放开点击修改功能，屏蔽forget功能
+
+diff --git a/alps/packages/apps/Settings/src/com/android/settings/wifi/WifiSettings.java b/alps/packages/apps/Settings/src/com/android/settings/wifi/WifiSettings.java
+index 14fe976..53b3ff8 100755
+--- a/alps/packages/apps/Settings/src/com/android/settings/wifi/WifiSettings.java
++++ b/alps/packages/apps/Settings/src/com/android/settings/wifi/WifiSettings.java
+@@ -539,6 +539,7 @@ public class WifiSettings extends RestrictedSettingsFragment
+                     return;
+                 }
+  //jianqiu modify 20160628 set default wifi ssid "MOVISTAR WIFI"
++ //if (mSelectedAccessPoint.isSaved() || mSelectedAccessPoint.isEphemeral()) {
+                 if ((mSelectedAccessPoint.isSaved() || mSelectedAccessPoint.isEphemeral())
+ 			&& (mSelectedAccessPoint.getSsidStr() != null && !mSelectedAccessPoint.getSsidStr().equals("MOVISTAR WIFI"))) {
+                     // Allow forgetting a network if either the network is saved or ephemerally
+@@ -551,8 +552,9 @@ public class WifiSettings extends RestrictedSettingsFragment
+                 mWifiSettingsExt.onCreateContextMenu(menu, mSelectedAccessPoint.getDetailedState(),
+                         mSelectedAccessPoint);
+  //jianqiu modify 20160628 set default wifi ssid "MOVISTAR WIFI"
+-                if ((mSelectedAccessPoint.isSaved())
+-			&& (mSelectedAccessPoint.getSsidStr() != null && !mSelectedAccessPoint.getSsidStr().equals("MOVISTAR WIFI"))) {
++ if (mSelectedAccessPoint.isSaved()) {
++                //if ((mSelectedAccessPoint.isSaved())
++			//&& (mSelectedAccessPoint.getSsidStr() != null && !mSelectedAccessPoint.getSsidStr().equals("MOVISTAR WIFI"))) {
+                     menu.add(Menu.NONE, MENU_ID_MODIFY, 0, R.string.wifi_menu_modify);
+                     // M: add NfcAdapter judge for ALPS02293624
+                     try {
+@@ -617,30 +619,36 @@ public class WifiSettings extends RestrictedSettingsFragment
+         if (preference instanceof AccessPointPreference) {
+             mSelectedAccessPoint = ((AccessPointPreference) preference).getAccessPoint();
+  //jianqiu modify 20160628 set default wifi ssid "MOVISTAR WIFI"			
+-	    if(mSelectedAccessPoint.getSsidStr() != null && mSelectedAccessPoint.getSsidStr().equals("MOVISTAR WIFI")){
++	    /*if(mSelectedAccessPoint.getSsidStr() != null && mSelectedAccessPoint.getSsidStr().equals("MOVISTAR WIFI")){
+ 			Log.d("jianqiu","onPreferenceTreeClick return");
+ 			return true;
+-	    	}
++	    	}*/
++	    	Log.d("jianqiu","onPreferenceTreeClick");
+             /** Bypass dialog for unsecured, unsaved, and inactive networks */
+             if (mSelectedAccessPoint.getSecurity() == AccessPoint.SECURITY_NONE &&
+                     !mSelectedAccessPoint.isSaved() && !mSelectedAccessPoint.isActive()) {
+                 /// M: support open ap wps test @{
+                 if (FeatureOption.MTK_OPEN_AP_WPS_SUPPORT
+                     && mSelectedAccessPoint.getWpsAvailable()) {
++                    Log.d("jianqiu","onPreferenceTreeClick3");
+                     showDialog(mSelectedAccessPoint, false);
+                 } else {
+                 /// @}
+                     mSelectedAccessPoint.generateOpenNetworkConfig();
++				Log.d("jianqiu","onPreferenceTreeClick4");
+                     if (!savedNetworksExist) {
++				Log.d("jianqiu","onPreferenceTreeClick5");
+                         savedNetworksExist = true;
+                         getActivity().invalidateOptionsMenu();
+                     }
+                     connect(mSelectedAccessPoint.getConfig());
+                 }
+             } else if (mSelectedAccessPoint.isSaved()){
++            Log.d("jianqiu","onPreferenceTreeClick1");
+                 mDlgModify = false;
+                 showDialog(mSelectedAccessPoint, false);
+             } else {
++            Log.d("jianqiu","onPreferenceTreeClick2");
+                 mDlgModify = false;
+                 showDialog(mSelectedAccessPoint, true);
+             }
+@@ -710,8 +718,15 @@ public class WifiSettings extends RestrictedSettingsFragment
+                 if (mSelectedAccessPoint != null) {
+                     mWifiSettingsExt.recordPriority(mSelectedAccessPoint.getConfig());
+                 }
+-                final boolean hideForget = (ap == null || isEditabilityLockedDown(getActivity(),
++                boolean hideForget = (ap == null || isEditabilityLockedDown(getActivity(),
+                         ap.getConfig()));
++		//jianqiu modify 20170114 wifi
++		if (mSelectedAccessPoint != null) {				
++		if(mSelectedAccessPoint.getSsidStr() != null && mSelectedAccessPoint.getSsidStr().equals("MOVISTAR WIFI")){
++			hideForget = true;
++		}
++		}
++				
+                 mDialog = new WifiDialog(getActivity(), this, ap, mDlgEdit,
+                         mDlgModify, /* no hide submit/connect */ false,
+                         /* hide forget if config locked down */ hideForget);
+diff --git a/alps/vendor/mediatek/proprietary/hardware/connectivity/wlan/config/mtk-wpa_supplicant-overlay.conf b/alps/vendor/mediatek/proprietary/hardware/connectivity/wlan/config/mtk-wpa_supplicant-overlay.conf
+index dfeff88..927ce99 100755
+--- a/alps/vendor/mediatek/proprietary/hardware/connectivity/wlan/config/mtk-wpa_supplicant-overlay.conf
++++ b/alps/vendor/mediatek/proprietary/hardware/connectivity/wlan/config/mtk-wpa_supplicant-overlay.conf
+@@ -6,5 +6,5 @@ overlay_loaded=1
+ network={
+          ssid="MOVISTAR WIFI"
+          scan_ssid=1
+-         key_mgmt=NONE
++         key_mgmt=IEEE8021X
+ }
