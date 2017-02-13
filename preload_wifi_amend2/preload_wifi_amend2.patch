@@ -1,0 +1,54 @@
+commit adf17f971cff99fd3402cf2b7af69b45f743e677
+Author: liubinyang <liubinyang@hkzechin.com>
+Date:   Sat Aug 20 15:52:43 2016 +0800
+
+    [Bmobile][wifi][FAQ15503]预置运营商的wifi AP之后引起功耗大
+
+diff --git a/alps/external/wpa_supplicant_8/wpa_supplicant/wpa_supplicant.c b/alps/external/wpa_supplicant_8/wpa_supplicant/wpa_supplicant.c
+old mode 100644
+new mode 100755
+index 5d5bced..5b900cc
+--- a/alps/external/wpa_supplicant_8/wpa_supplicant/wpa_supplicant.c
++++ b/alps/external/wpa_supplicant_8/wpa_supplicant/wpa_supplicant.c
+@@ -4825,7 +4825,40 @@ static int wpa_supplicant_init_iface(struct wpa_supplicant *wpa_s,
+ 		return -1;
+ 	}
+ 	os_strlcpy(wpa_s->ifname, iface->ifname, sizeof(wpa_s->ifname));
+-
++	//@darren add for skip scan MOVISTAR WIFI when wifi cannot connect to it from FAQ[FAQ15503]
++	#ifdef CONFIG_MTK_P2P
++		if((os_strlen(wpa_s->ifname) == os_strlen("p2p0"))
++			&& (os_strncasecmp(wpa_s->ifname,"p2p0",os_strlen("p2p0")) ==0 )){
++			struct wpa_ssid *cmcc_conf = wpa_s->conf->ssid;
++			struct wpa_ssid *tmp = NULL;
++			int removed = 0;
++			while(cmcc_conf){
++				removed = 0;
++				int ssid_len = os_strlen(cmcc_conf->ssid);
++			if(ssid_len == os_strlen("MOVISTAR WIFI")){
++				if(os_strncasecmp(cmcc_conf->ssid,"MOVISTAR WIFI",ssid_len)){
++					tmp = cmcc_conf->next;
++					removed = 1;
++					wpa_config_remove_network(wpa_s->conf,cmcc_conf->id);
++					if(wpa_s->conf->update_config){
++						if(wpa_config_write(wpa_s->confname,wpa_s->conf)){
++							wpa_printf(MSG_DEBUG,"CTRL_IFACE:SAVE_CONFIG - Failed to "
++								"update configuration");
++						}else{
++							wpa_printf(MSG_DEBUG,"CTRL_IFACE:SAVE_CONFIG - Configuration"
++								" updated");
++						}
++					}
++				}
++			}
++			if (removed)
++				cmcc_conf = tmp;
++			else 
++				cmcc_conf = cmcc_conf->next;/* have not touched */
++			}
++		}		
++	#endif
++	//@darren add end
+ 	if (iface->bridge_ifname) {
+ 		if (os_strlen(iface->bridge_ifname) >=
+ 		    sizeof(wpa_s->bridge_ifname)) {
