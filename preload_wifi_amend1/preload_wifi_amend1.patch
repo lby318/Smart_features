@@ -1,0 +1,86 @@
+commit fbb5bdd05b031d09e1161b8ff1c998303622ffaa
+Author: liangjianqiu <liangjianqiu@hkzechin.com>
+Date:   Tue Jun 28 11:55:20 2016 +0800
+
+    [Bmobile][Wifi]默认预置 MOVISTAR WIFI,显示在wiif列表中，不可删改
+
+diff --git a/alps/packages/apps/Settings/src/com/android/settings/wifi/SavedAccessPointsWifiSettings.java b/alps/packages/apps/Settings/src/com/android/settings/wifi/SavedAccessPointsWifiSettings.java
+old mode 100644
+new mode 100755
+index fb64d08..b4ec31a
+--- a/alps/packages/apps/Settings/src/com/android/settings/wifi/SavedAccessPointsWifiSettings.java
++++ b/alps/packages/apps/Settings/src/com/android/settings/wifi/SavedAccessPointsWifiSettings.java
+@@ -202,6 +202,12 @@ public class SavedAccessPointsWifiSettings extends SettingsPreferenceFragment
+     @Override
+     public boolean onPreferenceTreeClick(PreferenceScreen screen, Preference preference) {
+         if (preference instanceof AccessPointPreference) {
++ //jianqiu modify 20160628 set default wifi ssid "MOVISTAR WIFI"			
++            mSelectedAccessPoint = ((AccessPointPreference) preference).getAccessPoint();	
++	    if(mSelectedAccessPoint.getSsidStr() != null && mSelectedAccessPoint.getSsidStr().equals("MOVISTAR WIFI")){
++			Log.d("jianqiu","onPreferenceTreeClick return");
++			return true;
++	    	}			
+             showDialog((AccessPointPreference) preference, false);
+             return true;
+         } else{
+diff --git a/alps/packages/apps/Settings/src/com/android/settings/wifi/WifiSettings.java b/alps/packages/apps/Settings/src/com/android/settings/wifi/WifiSettings.java
+old mode 100644
+new mode 100755
+index 03ab864..14fe976
+--- a/alps/packages/apps/Settings/src/com/android/settings/wifi/WifiSettings.java
++++ b/alps/packages/apps/Settings/src/com/android/settings/wifi/WifiSettings.java
+@@ -538,8 +538,9 @@ public class WifiSettings extends RestrictedSettingsFragment
+                 if (isEditabilityLockedDown(getActivity(), config)) {
+                     return;
+                 }
+-
+-                if (mSelectedAccessPoint.isSaved() || mSelectedAccessPoint.isEphemeral()) {
++ //jianqiu modify 20160628 set default wifi ssid "MOVISTAR WIFI"
++                if ((mSelectedAccessPoint.isSaved() || mSelectedAccessPoint.isEphemeral())
++			&& (mSelectedAccessPoint.getSsidStr() != null && !mSelectedAccessPoint.getSsidStr().equals("MOVISTAR WIFI"))) {
+                     // Allow forgetting a network if either the network is saved or ephemerally
+                     // connected. (In the latter case, "forget" blacklists the network so it won't
+                     // be used again, ephemerally).
+@@ -549,8 +550,9 @@ public class WifiSettings extends RestrictedSettingsFragment
+                 ///M: add mtk feature
+                 mWifiSettingsExt.onCreateContextMenu(menu, mSelectedAccessPoint.getDetailedState(),
+                         mSelectedAccessPoint);
+-
+-                if (mSelectedAccessPoint.isSaved()) {
++ //jianqiu modify 20160628 set default wifi ssid "MOVISTAR WIFI"
++                if ((mSelectedAccessPoint.isSaved())
++			&& (mSelectedAccessPoint.getSsidStr() != null && !mSelectedAccessPoint.getSsidStr().equals("MOVISTAR WIFI"))) {
+                     menu.add(Menu.NONE, MENU_ID_MODIFY, 0, R.string.wifi_menu_modify);
+                     // M: add NfcAdapter judge for ALPS02293624
+                     try {
+@@ -614,6 +616,11 @@ public class WifiSettings extends RestrictedSettingsFragment
+     public boolean onPreferenceTreeClick(PreferenceScreen screen, Preference preference) {
+         if (preference instanceof AccessPointPreference) {
+             mSelectedAccessPoint = ((AccessPointPreference) preference).getAccessPoint();
++ //jianqiu modify 20160628 set default wifi ssid "MOVISTAR WIFI"			
++	    if(mSelectedAccessPoint.getSsidStr() != null && mSelectedAccessPoint.getSsidStr().equals("MOVISTAR WIFI")){
++			Log.d("jianqiu","onPreferenceTreeClick return");
++			return true;
++	    	}
+             /** Bypass dialog for unsecured, unsaved, and inactive networks */
+             if (mSelectedAccessPoint.getSecurity() == AccessPoint.SECURITY_NONE &&
+                     !mSelectedAccessPoint.isSaved() && !mSelectedAccessPoint.isActive()) {
+@@ -743,7 +750,6 @@ public class WifiSettings extends RestrictedSettingsFragment
+             return;
+         }
+         final int wifiState = mWifiManager.getWifiState();
+-
+         switch (wifiState) {
+             case WifiManager.WIFI_STATE_ENABLED:
+                 // AccessPoints are automatically sorted with TreeSet.
+@@ -758,7 +764,9 @@ public class WifiSettings extends RestrictedSettingsFragment
+                 int index = 0;
+                 for (AccessPoint accessPoint : accessPoints) {
+                     // Ignore access points that are out of range.
+-                    if (accessPoint.getLevel() != -1) {
++                    //jianqiu modify 20160628 set default wifi ssid "MOVISTAR WIFI"
++                    if (accessPoint.getLevel() != -1 
++			    || (accessPoint.getSsidStr() != null && accessPoint.getSsidStr().equals("MOVISTAR WIFI"))) {
+                         hasAvailableAccessPoints = true;
+                         if (accessPoint.getTag() != null) {
+                             final Preference pref = (Preference) accessPoint.getTag();
