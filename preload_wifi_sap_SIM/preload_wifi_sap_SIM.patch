@@ -1,0 +1,16 @@
+commit c66774998caab32c5c9a3a46b1da5821accc0226
+Author: liangjianqiu <liangjianqiu@hkzechin.com>
+Date:   Thu Feb 9 18:27:50 2017 +0800
+
+    [Bmobile][Wifi]修改默认 MOVISTAR WIFI eap=SIM
+
+diff --git a/alps/vendor/mediatek/proprietary/hardware/connectivity/wlan/config/mtk-wpa_supplicant-overlay.conf b/alps/vendor/mediatek/proprietary/hardware/connectivity/wlan/config/mtk-wpa_supplicant-overlay.conf
+index 927ce99834..cc5454292b 100755
+--- a/alps/vendor/mediatek/proprietary/hardware/connectivity/wlan/config/mtk-wpa_supplicant-overlay.conf
++++ b/alps/vendor/mediatek/proprietary/hardware/connectivity/wlan/config/mtk-wpa_supplicant-overlay.conf
+@@ -7,4 +7,5 @@ network={
+          ssid="MOVISTAR WIFI"
+          scan_ssid=1
+          key_mgmt=IEEE8021X
++         eap=SIM
+ }
